@@ -3,8 +3,9 @@ import static org.junit.Assert.*;
 
 import ucb.junit.textui;
 
-/** Tests for hw0. 
- *  @author YOUR NAMES HERE
+
+/** Tests for hw0.
+ *  @author Pongsatorn Chanpanichravee
  */
 public class Tester {
 
@@ -13,7 +14,7 @@ public class Tester {
      * testing later.
      *
      * To actually run the tests, just use
-     *      java Tester 
+     *      java Tester
      * (after first compiling your files).
      *
      * DON'T put your HW0 solutions here!  Put them in a separate
@@ -24,7 +25,7 @@ public class Tester {
     @Test
     public void maxTest() {
         // Change call to max to make this call yours.
-        assertEquals(14, max(new int[] { 0, -5, 2, 14, 10 }));
+        assertEquals(14, Solution.max(new int[] { 0, -5, 2, 14, 10 }));
         // REPLACE THIS WITH MORE TESTS.
     }
 
