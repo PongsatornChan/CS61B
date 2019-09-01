@@ -25,21 +25,21 @@ public class Tester {
     @Test
     public void maxTest() {
         // Change call to max to make this call yours.
-        assertEquals(14, Solution.max(new int[] { 0, -5, 2, 14, 10 }));
+        assertEquals(14, Solutions.max(new int[] { 0, -5, 2, 14, 10 }));
         // REPLACE THIS WITH MORE TESTS.
     }
 
     @Test
     public void threeSumTest() {
         // Change call to threeSum to make this call yours.
-        assertTrue(threeSum(new int[] { -6, 3, 10, 200 }));
+        assertTrue(Solutions.threeSum(new int[] { -6, 3, 10, 200 }));
         // REPLACE THIS WITH MORE TESTS.
     }
 
     @Test
     public void threeSumDistinctTest() {
         // Change call to threeSumDistinct to make this call yours.
-        assertFalse(threeSumDistinct(new int[] { -6, 3, 10, 200 }));
+        assertFalse(Solutions.threeSumDistinct(new int[] { -6, 3, 10, 200 }));
         // REPLACE THIS WITH MORE TESTS.
     }
 
