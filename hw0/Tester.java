@@ -33,14 +33,16 @@ public class Tester {
     public void threeSumTest() {
         // Change call to threeSum to make this call yours.
         assertTrue(Solutions.threeSum(new int[] { -6, 3, 10, 200 }));
-        // REPLACE THIS WITH MORE TESTS.
+        assertTrue(Solutions.threeSum(new int[] { 8, 2, -1, 15 }));
+        assertTrue(Solutions.threeSum(new int[] { 5, 1, 0, 3, 6 }));
     }
 
     @Test
     public void threeSumDistinctTest() {
         // Change call to threeSumDistinct to make this call yours.
         assertFalse(Solutions.threeSumDistinct(new int[] { -6, 3, 10, 200 }));
-        // REPLACE THIS WITH MORE TESTS.
+        assertFalse(Solutions.threeSumDistinct(new int[] { 8, 2, -1, 15 }));
+        assertFalse(Solutions.threeSumDistinct(new int[] { 5, 1, 0, 3, 6 }));
     }
 
     public static void main(String[] unused) {
