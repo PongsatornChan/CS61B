@@ -138,8 +138,14 @@ public class IntList {
      *  elements of B.  May modify items of A. Don't use 'new'. */
 
     static IntList dcatenate(IntList A, IntList B) {
-        return null; // REPLACE WITH YOUR CODE */
-
+        IntList curr = A;
+        if(curr == null)
+            return A = B;
+        while(curr.tail != null) {
+            curr = curr.tail;
+        }
+        curr.tail = B;
+        return A;
     }
 
     /* 2b. */
@@ -150,8 +156,22 @@ public class IntList {
       * This method should NOT modify the items in L. */
 
     static IntList subTail(IntList L, int start) {
-        return null; // REPLACE WITH YOUR CODE
+        if(L == null) {
+            return null;
+        } else if(start == 0) {
+            IntList result = new IntList(L.head, null);
+            if(L.tail == null)
+                return result; // in case that L has only one element
+            for(IntList currOri = L.tail, currRe = result; currOri != null; currOri = currOri.tail) {
+                currRe.tail = new IntList(currOri.head, null);
+                currRe = currRe.tail;
+            }
+            return result;
+        } else {
+            return subTail(L.tail, start-1);
+        }
     }
+
 
 
 
@@ -166,7 +186,14 @@ public class IntList {
      *  that start and len are always >= 0.
      */
     static IntList sublist(IntList L, int start, int len) {
-        return null;  // REPLACE WITH YOUR SOLUTION
+        IntList lstA = subTail(L, start);
+        int currLen = len;
+        IntList curr = lstA;
+        for(curr = lstA; currLen > 1 && curr.tail != null; currLen -= 1 ) {
+            curr = curr.tail;
+        }
+        curr.tail = null;
+        return lstA;
 
     }
 
@@ -178,7 +205,20 @@ public class IntList {
      *  As with sublist, you can assume the items requested
      *  exist, and that START and LEN are >= 0. */
     static IntList dsublist(IntList L, int start, int len) {
-        return null; // REPLACE WITH YOUR SOLUTION
+        IntList curr = L;
+        for(int i = 0; i < start; i++) { // find the start position
+            curr = curr.tail;
+        }
+
+        IntList oriLst = L;
+        for(int i = 0; i < len-1; i++) {
+            L.head = curr.head;
+            L = L.tail;
+            curr = curr.tail;
+        }
+        L.head = curr.head;
+        L.tail = null; // for the last element we want
+        return oriLst;
 
     }
 
