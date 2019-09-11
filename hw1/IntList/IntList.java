@@ -186,6 +186,9 @@ public class IntList {
      *  that start and len are always >= 0.
      */
     static IntList sublist(IntList L, int start, int len) {
+        if(L == null || len == 0) /* spacial case */
+            return null;
+
         IntList lstA = subTail(L, start);
         int currLen = len;
         IntList curr = lstA;
@@ -205,6 +208,9 @@ public class IntList {
      *  As with sublist, you can assume the items requested
      *  exist, and that START and LEN are >= 0. */
     static IntList dsublist(IntList L, int start, int len) {
+        if(L == null || len == 0) /* spacial case */
+            return null;
+
         IntList curr = L;
         for(int i = 0; i < start; i++) { // find the start position
             curr = curr.tail;

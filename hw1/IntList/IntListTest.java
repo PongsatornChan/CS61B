@@ -52,6 +52,9 @@ public class IntListTest {
         IntList lstA = IntList.list(1,2,3,4,5);
         assertEquals(IntList.list(3,4,5), IntList.subTail(lstA, 2));
         assertEquals(IntList.list(1,2,3,4,5), lstA);
+
+        assertEquals(IntList.list(1,2,3,4,5), IntList.subTail(lstA, 0));
+        assertEquals(null, IntList.subTail(IntList.list(), 0));
     }
 
     /** Tests that sublist works properly. Again, don't use new.
@@ -64,6 +67,9 @@ public class IntListTest {
         IntList lstA = IntList.list(1,2,3,2,5,1,2);
         assertEquals(IntList.list(3,2,5), IntList.sublist(lstA, 2,3));
         assertEquals(IntList.list(1,2,3,2,5,1,2), lstA);
+
+        assertEquals(null, IntList.sublist(lstA, 0,0));
+        assertEquals(null, IntList.sublist(IntList.list(), 0, 0));
     }
 
     /** Tests that dSublist works properly. Again, don't use new.
@@ -77,6 +83,9 @@ public class IntListTest {
         IntList lstA = IntList.list(1,2,3,2,5,1,2);
         assertEquals(IntList.list(3,2,5), IntList.dsublist(lstA, 2,3));
         assertEquals(IntList.list(3,2,5), lstA);
+
+        assertEquals(null, IntList.dsublist(lstA, 0,0));
+        assertEquals(null, IntList.dsublist(IntList.list(), 0, 0));
     }
 
 
