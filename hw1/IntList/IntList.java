@@ -208,9 +208,9 @@ public class IntList {
      *  As with sublist, you can assume the items requested
      *  exist, and that START and LEN are >= 0. */
     static IntList dsublist(IntList L, int start, int len) {
-        if(L == null || len == 0) /* spacial case */
+        if (L == null || len == 0) {/* spacial case  if len is 0 L won't change*/
             return null;
-
+        }
         IntList curr = L;
         for(int i = 0; i < start; i++) { // find the start position
             curr = curr.tail;
