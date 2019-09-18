@@ -3,6 +3,7 @@ package image;
 import java.util.Arrays;
 import java.awt.Color;
 
+
 /**
  *  @author Josh Hug, Paul Hilfinger (style revisions).
  */

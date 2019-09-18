@@ -85,6 +85,42 @@ public class MatrixUtilsTest {
 
     }
 
+    @Test
+    public void testFindVerticalSeam() {
+        double[][] input = {
+                {1000000, 1000000, 1000000, 1000000},
+                {2000000, 1075990, 1030003, 2000000},
+                {2075990, 1060005, 1133049, 2030003},
+                {2060005, 1089520, 1098278, 2133049},
+                {2089520, 1162923, 1124919, 2098278},
+                {2162923, 2124919, 2124919, 2124919}
+        };
+
+        int[] expected = {1, 2, 1, 1, 2, 1};
+
+        assertArrayEquals(expected, MatrixUtils.findVerticalSeam(input));
+    }
+
+    @Test
+    public void testFindSeam() {
+        double[][] input = {
+                {1000000, 1000000, 1000000, 1000000},
+                {2000000, 1075990, 1030003, 2000000},
+                {2075990, 1060005, 1133049, 2030003},
+                {2060005, 1089520, 1098278, 2133049},
+                {2089520, 1162923, 1124919, 2098278},
+                {2162923, 2124919, 2124919, 2124919}
+        };
+
+        int[] expected = {1, 2, 1, 1, 2, 1};
+
+        assertArrayEquals(expected, MatrixUtils.findSeam(input, MatrixUtils.Orientation.VERTICAL));
+
+        double[][] inputT = MatrixUtils.t(input);
+        assertArrayEquals(expected, MatrixUtils.findSeam(inputT, MatrixUtils.Orientation.HORIZONTAL));
+    }
+
+
     public static void main(String[] args) {
         System.exit(ucb.junit.textui.runClasses(MatrixUtilsTest.class));
     }

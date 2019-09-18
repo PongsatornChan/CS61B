@@ -158,7 +158,43 @@ public class MatrixUtils {
      */
 
     public static int[] findVerticalSeam(double[][] m) {
-        return null; //your code here
+        int[] verticSeam = new int[m.length];
+        double sumVerticSeam = 0;
+
+        double smallestSum = 9999999;
+        int[] smallestSeam = new int[m.length];
+        for (int j = 0; j < m[0].length; j++) {
+            verticSeam[0] = j;
+            sumVerticSeam += m[0][j];
+            for (int i = 1; i < m.length; i++) {
+                verticSeam[i] = findIndexOfSmallest(m[i], j-1, j+1);
+                sumVerticSeam += m[i][verticSeam[i]];
+            }
+            if(smallestSum > sumVerticSeam) {
+                smallestSum = sumVerticSeam;
+                System.arraycopy(verticSeam, 0, smallestSeam, 0, verticSeam.length);
+            }
+            sumVerticSeam = 0;
+        }
+        return smallestSeam;
+    }
+
+    public static int findIndexOfSmallest(double[] arr, int startIndex, int endIndex) {
+        if (startIndex < 0) {
+            startIndex = 0;
+        } else if (endIndex >= arr.length) {
+            endIndex = arr.length - 1;
+        }
+
+        double smallest = arr[startIndex];
+        int smallIndex = startIndex;
+        for (int i = startIndex + 1; i < arr.length && i <= endIndex; i++) {
+            if (arr[i] < smallest) {
+                smallest = arr[i];
+                smallIndex = i;
+            }
+        }
+        return smallIndex;
     }
 
     /** Returns the SEAM of M with the given ORIENTATION.
@@ -167,7 +203,12 @@ public class MatrixUtils {
      */
 
     public static int[] findSeam(double[][] m, Orientation orientation) {
-        return null; //your code here
+        if (orientation == Orientation.VERTICAL) {
+            return findVerticalSeam(m);
+        } else {
+            double[][] mT = t(m);
+            return findVerticalSeam(mT);
+        }
     }
 
     /** does nothing. ARGS not used. use for whatever purposes you'd like */
