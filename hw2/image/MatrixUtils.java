@@ -1,5 +1,7 @@
 package image;
 
+import static java.lang.Double.min;
+
 /** Provides a variety of utilities for operating on matrices.
  *  All methods assume that the double[][] arrays provided are rectangular.
  *
@@ -55,7 +57,28 @@ public class MatrixUtils {
      */
 
     public static double[][] accumulateVertical(double[][] m) {
-        return null; //your code here
+        int h = m.length;
+        int w = m[0].length;
+
+        double[][] accVerMatrix = new double[h][w];
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                if (i == 0) {
+                    accVerMatrix[i][j] = m[i][j];
+                } else if (j == 0) {
+                    double temp = min(accVerMatrix[i - 1][j], accVerMatrix[i - 1][j + 1]);
+                    accVerMatrix[i][j] = m[i][j] + temp;
+                } else if (j == w-1) {
+                    double temp = min(accVerMatrix[i - 1][j - 1], accVerMatrix[i - 1][j]);
+                    accVerMatrix[i][j] = m[i][j] + temp;
+                } else {
+                    double temp = min(accVerMatrix[i - 1][j], accVerMatrix[i - 1][j + 1]);
+                    temp = min(temp, accVerMatrix[i - 1][j - 1]);
+                    accVerMatrix[i][j] = m[i][j] + temp;
+                }
+            }
+        }
+        return accVerMatrix;
     }
 
     /** Non-destructively accumulates a matrix M along the specified
@@ -82,7 +105,27 @@ public class MatrixUtils {
      */
 
     public static double[][] accumulate(double[][] m, Orientation orientation) {
-        return null; //your code here
+        if (orientation == Orientation.VERTICAL) {
+            return accumulateVertical(m);
+        } else {
+            double[][] mT = t(m);
+            double[][] result = accumulateVertical(mT);
+            return t(result);
+        }
+
+    }
+
+    public static double[][] t(double[][] m) {
+        int h = m.length;
+        int w = m[0].length;
+
+        double[][] result = new double[w][h];
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                result[i][j] = m[j][i];
+            }
+        }
+        return result;
     }
 
     /** Finds the vertical seam VERTSEAM of the given matrix M.
