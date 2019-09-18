@@ -3,21 +3,33 @@ package lists;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/** FIXME
+/**
  *
- *  @author FIXME
+ *  @author Pongsatorn Chanpanichravee
  */
 
 public class ListsTest {
-    /** FIXME
+    /** Just a simply test for homework 2
      */
 
-    // It might initially seem daunting to try to set up
-    // IntListList expected.
-    //
-    // There is an easy way to get the IntListList that you want in just
-    // few lines of code! Make note of the IntListList.list method that
-    // takes as input a 2D array.
+    @Test
+    public void testNaturalRuns() {
+        int[][] a = {{1, 3, 7}, {5}, {4, 6, 9, 10}, {10, 11}};
+        IntListList expected = IntListList.list(a);
+        int[] b = {1, 3, 7, 5, 4, 6, 9, 10, 10, 11};
+        IntList input = IntList.list(b);
+        assertEquals(expected, Lists.naturalRuns(input));
+
+        int[][] c = {{10}, {9}, {8}, {7}};
+        expected = IntListList.list(c);
+        int[] d = {10, 9, 8, 7};
+        input = IntList.list(d);
+        assertEquals(expected, Lists.naturalRuns(input));
+
+        expected = new IntListList(new IntList(), null);
+        input = new IntList();
+        assertEquals(expected, Lists.naturalRuns(input));
+    }
 
     public static void main(String[] args) {
         System.exit(ucb.junit.textui.runClasses(ListsTest.class));
