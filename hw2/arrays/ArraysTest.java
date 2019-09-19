@@ -49,6 +49,8 @@ public class ArraysTest {
         int[][] e = {{7, 8, 9, 10}};
         int[] b = {7, 8, 9, 10};
         assertArrayEquals(e, Arrays.naturalRuns(b));
+
+        assertArrayEquals(new int[][] {{}}, Arrays.naturalRuns(new int[] {}));
     }
 
     public static void main(String[] args) {

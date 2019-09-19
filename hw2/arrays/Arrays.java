@@ -55,6 +55,9 @@ class Arrays {
      *  returns the three-element array
      *  {{1, 3, 7}, {5}, {4, 6, 9, 10}}. */
     static int[][] naturalRuns(int[] A) {
+        if (A.length == 0) {
+            return new int[][] {{}};
+        }
         int num = 1;
         int highest = A[0];
         for (int i = 1; i < A.length; i++) {
