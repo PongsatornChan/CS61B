@@ -30,9 +30,23 @@ class Place {
         x = x0; y = y0;
     }
 
+    /** X displacement of adjacent squares, indexed by direction. */
+    static final int[] DX = { 0, 1, 1, 1, 0, -1, -1, -1, 0 };
+
+    /** Y displacement of adjacent squares, indexed by direction. */
+    static final int[] DY = { 0, 1, 0, -1, -1, -1, 0, 1, 1 };
+
+    /** Coordinates of this Place. */
+    protected final int x, y;
+
+    /** Places already generated. */
+    private static Place[][] _places = new Place[10][10];
+
     /** Return the position (X, Y).  This is a factory method that
      *  creates a new Place only if needed by caching those that are
-     *  created. */
+     *  created.
+     *  Output: Place object at x,y position
+     */
     static Place pl(int x, int y) {
         assert x >= 0 && y >= 0;
         int s = max(x, y);
@@ -93,7 +107,24 @@ class Place {
     static PlaceList[][][] successorCells(int width, int height) {
         PlaceList[][][] M = new PlaceList[width][height][9];
         int lim = Math.max(width, height);
-        // FIXME
+        // FIXME 1
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                M[i][j][0] = new PlaceList();
+                for (int iCheck = 0; iCheck < width; iCheck++) {
+                    for (int jCheck = 0; jCheck < height; jCheck++) {
+                        int dir = Place.dirOf(i, j, iCheck, jCheck);
+                        if (dir != 0) {
+                            if (M[i][j][dir] == null) {
+                                M[i][j][dir] = new PlaceList();
+                            }
+                            M[i][j][dir].add(pl(iCheck, jCheck));
+                            M[i][j][0].add(pl(iCheck, jCheck));
+                        }
+                    }
+                }
+            }
+        }
         return M;
     }
 
@@ -115,18 +146,4 @@ class Place {
     public String toString() {
         return String.format("(%d, %d)", x, y);
     }
-
-    /** X displacement of adjacent squares, indexed by direction. */
-    static final int[] DX = { 0, 1, 1, 1, 0, -1, -1, -1, 0 };
-
-    /** Y displacement of adjacent squares, indexed by direction. */
-    static final int[] DY = { 0, 1, 0, -1, -1, -1, 0, 1, 1 };
-
-    /** Coordinates of this Place. */
-    protected final int x, y;
-
-    /** Places already generated. */
-    private static Place[][] _places = new Place[10][10];
-
-
 }

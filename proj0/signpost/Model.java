@@ -38,7 +38,7 @@ import static signpost.Utils.*;
  *  When square S0 is connected to S1, we say that S1 is the <i>successor</i> of
  *  S0, and S0 is the <i>predecessor</i> of S1.  Sequences of connected squares
  *  with unknown (0) values form a <i>group</i>, identified by a unique
- *  <i>group number</i>.  Numbered cells (whether linked or not) are in group 0.
+ *  <i>group number</i>.  Numbered cells 'square' (whether linked or not) are in group 0.
  *  Unnumbered, unlinked cells are in group -1.
  *
  *  Squares are represented as objects of the inner class Sq (Model.Sq).  A
@@ -77,21 +77,21 @@ class Model implements Iterable<Model.Sq> {
 
         // DUMMY SETUP
         // FIXME: Remove everything down "// END DUMMY SETUP".
-        _board = new Sq[][] {
-            { new Sq(0, 0, 0, false, 2, -1), new Sq(0, 1, 0, false, 2, -1),
-              new Sq(0, 2, 0, false, 4, -1), new Sq(0, 3, 1, true, 2, 0) },
-            { new Sq(1, 0, 0, false, 2, -1), new Sq(1, 1, 0, false, 2, -1),
-              new Sq(1, 2, 0, false, 6, -1), new Sq(1, 3, 0, false, 2, -1) },
-            { new Sq(2, 0, 0, false, 6, -1), new Sq(2, 1, 0, false, 2, -1),
-              new Sq(2, 2, 0, false, 6, -1), new Sq(2, 3, 0, false, 2, -1) },
-            { new Sq(3, 0, 16, true, 0, 0), new Sq(3, 1, 0, false, 5, -1),
-              new Sq(3, 2, 0, false, 6, -1), new Sq(3, 3, 0, false, 4, -1) }
-        };
-        for (Sq[] col: _board) {
-            for (Sq sq : col) {
-                _allSquares.add(sq);
-            }
-        }
+//        _board = new Sq[][] {
+//            { new Sq(0, 0, 0, false, 2, -1), new Sq(0, 1, 0, false, 2, -1),
+//              new Sq(0, 2, 0, false, 4, -1), new Sq(0, 3, 1, true, 2, 0) },
+//            { new Sq(1, 0, 0, false, 2, -1), new Sq(1, 1, 0, false, 2, -1),
+//              new Sq(1, 2, 0, false, 6, -1), new Sq(1, 3, 0, false, 2, -1) },
+//            { new Sq(2, 0, 0, false, 6, -1), new Sq(2, 1, 0, false, 2, -1),
+//              new Sq(2, 2, 0, false, 6, -1), new Sq(2, 3, 0, false, 2, -1) },
+//            { new Sq(3, 0, 16, true, 0, 0), new Sq(3, 1, 0, false, 5, -1),
+//              new Sq(3, 2, 0, false, 6, -1), new Sq(3, 3, 0, false, 4, -1) }
+//        };
+//        for (Sq[] col: _board) {
+//            for (Sq sq : col) {
+//                _allSquares.add(sq);
+//            }
+//        }
         // END DUMMY SETUP
 
         // FIXME: Initialize _board so that _board[x][y] contains the Sq object
@@ -101,12 +101,48 @@ class Model implements Iterable<Model.Sq> {
         //        contains sequence number k.  Check that all numbers from
         //        1 - last appear; else throw IllegalArgumentException (see
         //        badArgs utility).
+        //        _7_
+        /* fill _solnNumToPlace with Places following solution. */
+        _solnNumToPlace = new Place[last];
+        for (int i = 0; i < _width; i++) {
+            for (int j = 0; j < _height; j++ ) {
+                try {
+                    _solnNumToPlace[_solution[i][j]] = Place.pl(i, j);
+                } catch (IndexOutOfBoundsException e) {
+                    throw badArgs("sequence number is invalid");
+                }
+            }
+        }
+        /* Check that all numbers of sequence are presented. */
+        if (Arrays.asList(_solnNumToPlace).contains(null)) {
+            throw badArgs("solution is not complete");
+        }
+
+        /* Initializing _board */
+        _board = new Sq[_width][_height];
+        int dir1 = _solnNumToPlace[1].dirOf(_solnNumToPlace[2]);
+        _board[0][_height-1] = new Sq(0, _height-1, 1, true, dir1, 0);
+
+        for (int num = 2; num < last; num++ ) {
+            Place currPlace = _solnNumToPlace[num];
+            Place nextPlace = _solnNumToPlace[num+1];
+                _board[currPlace.x][currPlace.y] =
+                        new Sq(currPlace.x, currPlace.y, 0, false, currPlace.dirOf(nextPlace), -1);
+        }
+        _board[_width-1][0] = new Sq(_width-1, 0, last, true, 0, 0);
+
+        for (Sq[] col: _board) {
+           for (Sq sq : col) {
+                _allSquares.add(sq);
+            }
+        }
 
         // FIXME: For each Sq object on the board, set its _successors and
         //        _predecessor lists to the lists of locations of all cells
         //        that it might connect to (i.e., all cells that are a queen
         //        move away in the direction of its arrow, and of all cells
         //        that might connect to it.
+        //        _8_
 
         _unconnected = last - 1;
     }
