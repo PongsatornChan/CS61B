@@ -287,12 +287,21 @@ class Model implements Iterable<Model.Sq> {
     boolean autoconnect() {
         // FIXME _11_
         boolean changed = false;
-        for (int i = 0; i < _solnNumToPlace.length - 1; i++) {
-            Sq currSq = _board[_solnNumToPlace[i].x][_solnNumToPlace[i].y];
-            Sq nextSq = _board[_solnNumToPlace[i+1].x][_solnNumToPlace[i+1].y];
-            if (currSq.connectable(nextSq)) {
-                currSq.connect(nextSq);
-                changed = true;
+        for (Sq sq : _allSquares) {
+            if (sq.sequenceNum() != 0 && (sq._successor == null || sq._predecessor == null)) {
+                for (Sq nextSq : _allSquares) {
+                    if (nextSq.sequenceNum() == sq.sequenceNum() + 1) {
+                        if (sq._successor == null && sq.connectable(nextSq)) {
+                            sq.connect(nextSq);
+                            changed = true;
+                        }
+                    } else if (nextSq.sequenceNum() == sq.sequenceNum() - 1) {
+                        if (sq._predecessor == null && nextSq.connectable(sq)) {
+                            nextSq.connect(sq);
+                            changed = true;
+                        }
+                    }
+                }
             }
         }
         return changed;
@@ -616,17 +625,36 @@ class Model implements Iterable<Model.Sq> {
 
             this._successor = s1;
             s1._predecessor = this;
-            if (this.hasFixedNum() && !this._successor.hasFixedNum()) {
-                this._successor.setFixedNum(this.sequenceNum() + 1);
+            if (this.sequenceNum() != 0 && this._successor.sequenceNum() == 0) {
+                releaseGroup(this._successor.group());
+                numberSuccessors(this);
             }
-            if (this._successor.hasFixedNum() && !this.hasFixedNum()) {
-                this.setFixedNum(this._successor.sequenceNum() - 1);
+            if (this._successor.sequenceNum() != 0 && this.sequenceNum() == 0) {
+                releaseGroup(this.group());
+                numberPredecessors(this._successor);
             }
             this._successor._head = this._head;
             if (!this.hasFixedNum() && !this._successor.hasFixedNum()) {
                 this._head._group = joinGroups(this._group, sgroup);
             }
             return true;
+        }
+
+        void numberSuccessors(Sq sq) {
+            assert sq._successor != null;
+            for (Sq sq1 = sq; sq1._successor != null; sq1 = sq1._successor) {
+                if (!sq1._successor.hasFixedNum())
+                    sq1._successor._sequenceNum = sq1._sequenceNum + 1;
+
+            }
+        }
+        void numberPredecessors(Sq sq) {
+            assert sq._predecessor != null;
+            for (Sq sq1 = sq; sq1._predecessor != null; sq1 = sq1._predecessor) {
+                if (!sq1._predecessor.hasFixedNum())
+                    sq._predecessor._sequenceNum = sq._sequenceNum - 1;
+            }
+
         }
 
         /** Disconnect me from my current successor, if any. */
@@ -646,6 +674,7 @@ class Model implements Iterable<Model.Sq> {
                 //        number.
                 //        Otherwise, the group has been split into two multi-
                 //        element groups.  Create a new group for next.
+
             } else {
                 // FIXME: If neither this nor any square in its group that
                 //        precedes it has a fixed sequence number, set all
