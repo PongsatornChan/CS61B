@@ -143,7 +143,16 @@ class Model implements Iterable<Model.Sq> {
         //        move away in the direction of its arrow, and of all cells
         //        that might connect to it.
         //        _8_
-
+        for (Sq sq : _allSquares) {
+            if (sq.direction() != 0) {
+                sq.successors().addAll(_allSuccessors[sq.x][sq.y][sq.direction()]);
+                for (Place pl : sq.successors()) {
+                    if (pl != Place.pl(0,_height-1)) {
+                        _board[pl.x][pl.y].predecessors().add(sq.pl);
+                    }
+                }
+            }
+        }
         _unconnected = last - 1;
     }
 
@@ -214,13 +223,16 @@ class Model implements Iterable<Model.Sq> {
         _solution = null;
         _usedGroups.clear();
         // FIXME: Initialize _board to contain nulls and clear all objects from
-        //        _allSquares.
+        //        _allSquares. _9_
+        _board = new Sq[width][height];
+        _allSquares = new ArrayList<Sq>();
 
         // FIXME: Initialize _allSuccSquares so that _allSuccSquares[x][y][dir]
         //        is a list of all the Places on the board that are a queen
         //        move in direction DIR from (x, y) and _allSuccSquares[x][y][0]
         //        is a list of all Places that are one queen move from in
         //        direction from (x, y).
+        PlaceList[][][] _allSuccSquares = Place.successorCells(width, height);
     }
 
     /** Remove all connections and non-fixed sequence numbers. */
@@ -273,13 +285,27 @@ class Model implements Iterable<Model.Sq> {
      *  unconnected and are separated by a queen move.  Returns true iff
      *  any changes were made. */
     boolean autoconnect() {
-        return false; // FIXME
+        // FIXME _11_
+        boolean changed = false;
+        for (int i = 0; i < _solnNumToPlace.length - 1; i++) {
+            Sq currSq = _board[_solnNumToPlace[i].x][_solnNumToPlace[i].y];
+            Sq nextSq = _board[_solnNumToPlace[i+1].x][_solnNumToPlace[i+1].y];
+            if (currSq.connectable(nextSq)) {
+                currSq.connect(nextSq);
+                changed = true;
+            }
+        }
+        return changed;
     }
 
     /** Sets the numbers in my squares to the solution from which I was
      *  last initialized by the constructor. */
     void solve() {
-        // FIXME
+        // FIXME _10_
+        for (Sq sq : _allSquares) {
+            sq.setFixedNum(_solution[sq.x][sq.y]);
+        }
+
         _unconnected = 0;
     }
 
@@ -287,8 +313,10 @@ class Model implements Iterable<Model.Sq> {
      *  successor, or 0 if it has none. */
     private int arrowDirection(int x, int y) {
         int seq0 = _solution[x][y];
-        // FIXME
-        return 0;
+        // FIXME _12_
+        Place succPlace = _solnNumToPlace[seq0+1];
+        int dir = Place.dirOf(x, y, succPlace.x, succPlace.y);
+        return dir;
     }
 
     /** Return a new, currently unused group number > 0.  Selects the
@@ -542,8 +570,23 @@ class Model implements Iterable<Model.Sq> {
          *    of the same connected sequence.
          */
         boolean connectable(Sq s1) {
-            // FIXME
-            return true;
+            // FIXME _13_
+            if (Place.dirOf(this.x, this.y, s1.x, s1.y) != this.direction()) {
+                if (s1.predecessor() == null && this.successor() == null) {
+                    if (this.hasFixedNum() && s1.hasFixedNum()) {
+                        if (this.sequenceNum() == s1.sequenceNum()-1) {
+                            return true;
+                        }
+                    } else if (!this.hasFixedNum() && !s1.hasFixedNum()) {
+                        if (this.group() != s1.group() || this.group() == -1) {
+                            return true;
+                        }
+                    } else {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         /** Connect me to S1, if we are connectable; otherwise do nothing.
@@ -569,7 +612,20 @@ class Model implements Iterable<Model.Sq> {
             //          unnumbered, so that it can be reused.
             //        + If both this and S1 are unnumbered, set the group of
             //          my head to the result of joining the two groups.
+            //          _14_
 
+            this._successor = s1;
+            s1._predecessor = this;
+            if (this.hasFixedNum() && !this._successor.hasFixedNum()) {
+                this._successor.setFixedNum(this.sequenceNum() + 1);
+            }
+            if (this._successor.hasFixedNum() && !this.hasFixedNum()) {
+                this.setFixedNum(this._successor.sequenceNum() - 1);
+            }
+            this._successor._head = this._head;
+            if (!this.hasFixedNum() && !this._successor.hasFixedNum()) {
+                this._head._group = joinGroups(this._group, sgroup);
+            }
             return true;
         }
 
