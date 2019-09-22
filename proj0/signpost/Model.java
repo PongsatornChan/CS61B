@@ -674,21 +674,72 @@ class Model implements Iterable<Model.Sq> {
                 //        number.
                 //        Otherwise, the group has been split into two multi-
                 //        element groups.  Create a new group for next.
+                    if (this._predecessor == null && next._successor == null) {
+                        releaseGroup(this.group());
+                        this._group = -1;
+                        next._group = -1;
+                    } else if (this._predecessor == null) {
+                        this._group = -1;
+                    } else if (next._successor == null) {
+                        next._group = -1;
+                    } else {
+                        next._group = newGroup();
+                    }
 
             } else {
                 // FIXME: If neither this nor any square in its group that
                 //        precedes it has a fixed sequence number, set all
                 //        their sequence numbers to 0 and create a new group
-                //        for them if this has a current predecessor (other
+                //        for them if this has a current predecessor (otherwise
                 //        set group to -1).
+                boolean hasFixed = false;
+                for (Sq curr = this; curr != null; curr = curr._predecessor ) {
+                    if (curr.hasFixedNum()) {
+                        hasFixed = true;
+                        break;
+                    }
+                }
+                if (!hasFixed) {
+                    for (Sq curr = this; curr != null; curr = curr._predecessor ) {
+                        curr._sequenceNum = 0;
+                    }
+                    if (this._predecessor == null) {
+                        this._group = -1;
+                    } else {
+                        this._head._group = newGroup();
+                    }
+                }
+
                 // FIXME: If neither next nor any square in its group that
                 //        follows it has a fixed sequence number, set all
                 //        their sequence numbers to 0 and create a new
                 //        group for them if next has a current successor
                 //        (otherwise set next's group to -1.)
+                hasFixed = false;
+                for (Sq curr = next; curr != null; curr = curr._successor ) {
+                    if (curr.hasFixedNum()) {
+                        hasFixed = true;
+                        break;
+                    }
+                }
+                if (!hasFixed) {
+                    for (Sq curr = this; curr != null; curr = curr._successor ) {
+                        curr._sequenceNum = 0;
+                    }
+                    if (this._successor == null) {
+                        this._group = -1;
+                    } else {
+                        this._head._group = newGroup();
+                    }
+                }
+
             }
             // FIXME: Set the _head of next and all squares in its group to
             //        next.
+            next._head = next;
+            for (Sq curr = this; curr != null; curr = curr._successor ) {
+                curr._head = next._head;
+            }
         }
 
         @Override
