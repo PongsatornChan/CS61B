@@ -353,6 +353,12 @@ class Model implements Iterable<Model.Sq> {
         for (Sq sq : _allSquares) {
             sq._sequenceNum = _solution[sq.x][sq.y];
         }
+        autoconnect();
+        for (Sq sq : _allSquares) {
+            if (sq.sequenceNum() == 0 || sq.group() != 0 || sq._head != _allSquares.get(2)._head) {
+                System.out.println("connect dosen't not work correctly");
+            }
+        }
         _unconnected = 0;
     }
 
@@ -625,7 +631,7 @@ class Model implements Iterable<Model.Sq> {
                             return true;
                         }
                     } else if (this.sequenceNum() == 0 && s1.sequenceNum() == 0) { // if (!this.hasFixedNum() && !s1.hasFixedNum()) {
-                        if (this.group() != s1.group() || this.group() == -1) {
+                        if (this.group() != s1.group() || this.group() == -1 || s1.group() == -1) {
                             return true;
                         }
                     } else {
@@ -661,46 +667,76 @@ class Model implements Iterable<Model.Sq> {
             //          my head to the result of joining the two groups.
             //          _14_
 
+            if (s1.sequenceNum() == 0 && s1.group() == 0) {
+                System.out.println("We fucked!!");
+            }
+            if (this.sequenceNum() == 0 && this.group() == 0) {
+                System.out.println("We fucked!!");
+            }
+
+            //        + Set my _successor field and S1's _predecessor field.
             this._successor = s1;
             s1._predecessor = this;
-            if (this.sequenceNum() != 0 && !this._successor.hasFixedNum()) {
-                releaseGroup(this._successor.group());
+
+            //        + If I have a number, number all my successors
+            //          accordingly (if needed).
+            //      [ Fix/ Numbered ] + [ 00000000 ]
+            if (this.sequenceNum() != 0 && s1.sequenceNum() == 0) {
                 numberSuccessors(this);
             }
-            if (this._successor.sequenceNum() != 0 && !this.hasFixedNum()) {
-                releaseGroup(this.group());
+
+            //        + If S1 is numbered, number me and my predecessors
+            //          accordingly (if needed).
+            //        [ 0000000000000 ] + [ Numbered ]
+            if (s1.sequenceNum() != 0 && this.sequenceNum() == 0) {
                 numberPredecessors(this._successor);
             }
-            this._successor._head = this._head;
-            if (!this.hasFixedNum() && !this._successor.hasFixedNum()) {
-                this._head._group = joinGroups(this._group, sgroup);
+
+            //        + Set the _head fields of my successors to my _head.
+            //        Set ALL _head of every members in group s1 to this._head
+            for (Sq curr = this._successor; curr != null; curr = curr._successor) {
+                curr._head = this._head;
+            }
+
+            //        + If both this and S1 are unnumbered, set the group of
+            //          my head to the result of joining the two groups.
+            if (this.sequenceNum() == 0 && this._successor.sequenceNum() == 0) {
+                this._head._group = joinGroups(this.group(), sgroup);
+                for (Sq curr = this._head; curr != null; curr = curr._successor) {
+                    curr._group = this._head._group;
+                }
             }
             return true;
         }
 
         /** give _sequenceNum of all sq's successors an appropiate sequence number
-         *  according to sq's _sequenceNum.
-         *  This method does not change any successor's fixed sequence number.
+         *  according to sq's _sequenceNum. And update _head and _group to that
+         *  of sq
          * @param sq
          */
         void numberSuccessors(Sq sq) {
             assert sq._successor != null;
+            if (sq._successor._group > 0) {
+                releaseGroup(sq._successor._group);
+            }
             for (Sq sq1 = sq; sq1._successor != null; sq1 = sq1._successor) {
-                if (!sq1._successor.hasFixedNum())
-                    sq1._successor._sequenceNum = sq1._sequenceNum + 1;
-
+                sq1._successor._sequenceNum = sq1.sequenceNum() + 1;
+                sq1._successor._head = sq.head();
+                sq1._group = sq.group();
             }
         }
         /** give _sequenceNum of all sq's predecessors an appropiate sequence number
          *  according to sq's _sequenceNum.
-         *  This method does not change any predecessor's fixed sequence number.
          * @param sq
          */
         void numberPredecessors(Sq sq) {
             assert sq._predecessor != null;
+            if (sq._predecessor._group > 0) {
+                releaseGroup(sq._predecessor._group);
+            }
             for (Sq sq1 = sq; sq1._predecessor != null; sq1 = sq1._predecessor) {
-                if (!sq1._predecessor.hasFixedNum())
-                    sq._predecessor._sequenceNum = sq._sequenceNum - 1;
+                sq._predecessor._sequenceNum = sq._sequenceNum - 1;
+                sq1._predecessor._group = sq.group();
             }
 
         }
@@ -724,12 +760,13 @@ class Model implements Iterable<Model.Sq> {
                 //        element groups.  Create a new group for next.
                     if (this._predecessor == null && next._successor == null) {
                         releaseGroup(this.group());
-                        this._group = -1;
-                        next._group = -1;
+                        this._group = -1; this._head = this;
+                        next._group = -1; next._head = next;
                     } else if (this._predecessor == null) {
-                        this._group = -1;
+                        this._group = -1; this._head = this;
+                        next._head = next;
                     } else if (next._successor == null) {
-                        next._group = -1;
+                        next._group = -1; next._head = next;
                     } else {
                         next._group = newGroup();
                     }
@@ -754,7 +791,10 @@ class Model implements Iterable<Model.Sq> {
                     if (this._predecessor == null) {
                         this._group = -1;
                     } else {
-                        this._head._group = newGroup();
+                        this._group = newGroup();
+                        for (Sq curr = this; curr != null; curr = curr._predecessor) {
+                            curr._group = this._group;
+                        }
                     }
                 }
 
@@ -777,7 +817,7 @@ class Model implements Iterable<Model.Sq> {
                     if (next._successor == null) {
                         next._group = -1;
                     } else {
-                        next._head._group = newGroup();
+                        next._group = newGroup();
                     }
                 }
 
@@ -786,6 +826,7 @@ class Model implements Iterable<Model.Sq> {
             //        next.
             for (Sq curr = next; curr != null; curr = curr._successor ) {
                 curr._head = next;
+                curr._group = next._group;
             }
         }
 

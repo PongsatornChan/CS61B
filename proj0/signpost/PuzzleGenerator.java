@@ -149,7 +149,7 @@ class PuzzleGenerator implements PuzzleSource {
                             nFound = 1;
                             found = model.get(x);
                             break;
-                        } else { //if (sq.connectable(model.get(x))) don't check itself doing
+                        } else { //if (sq.connectable(model.get(x))) {//don't check itself doing
                             nFound++;
                             found = model.get(x);
                         }
@@ -166,6 +166,8 @@ class PuzzleGenerator implements PuzzleSource {
                 if (nFound == 0) {
                     return 0;
                 } else if (nFound == 1) {
+//                    System.out.println(sq.sequenceNum()+ " " + sq.group()
+//                            + " connect to " + found.sequenceNum()+ " "+found.group());
                     sq.connect(found);
                     result = 2;
                 }
@@ -203,7 +205,7 @@ class PuzzleGenerator implements PuzzleSource {
                             nFound = 1;
                             found = model.get(x);
                             break;
-                        } else { // if (model.get(x).connectable(sq)) don't check itself doings
+                        } else { //if (model.get(x).connectable(sq)) { //don't check itself doings
                             nFound++;
                             found = model.get(x);
                         }
