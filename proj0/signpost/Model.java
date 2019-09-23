@@ -667,13 +667,6 @@ class Model implements Iterable<Model.Sq> {
             //          my head to the result of joining the two groups.
             //          _14_
 
-            if (s1.sequenceNum() == 0 && s1.group() == 0) {
-                System.out.println("We fucked!!");
-            }
-            if (this.sequenceNum() == 0 && this.group() == 0) {
-                System.out.println("We fucked!!");
-            }
-
             //        + Set my _successor field and S1's _predecessor field.
             this._successor = s1;
             s1._predecessor = this;
@@ -735,7 +728,7 @@ class Model implements Iterable<Model.Sq> {
                 releaseGroup(sq._predecessor._group);
             }
             for (Sq sq1 = sq; sq1._predecessor != null; sq1 = sq1._predecessor) {
-                sq._predecessor._sequenceNum = sq._sequenceNum - 1;
+                sq1._predecessor._sequenceNum = sq._sequenceNum - 1;
                 sq1._predecessor._group = sq.group();
             }
 
