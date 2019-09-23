@@ -1,6 +1,8 @@
 package signpost;
 
 import java.util.Scanner;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import ucb.util.CommandArgs;
 
@@ -18,14 +20,25 @@ public class Main {
 
         CommandArgs options =
             new CommandArgs("--seed=(\\d+) --log --setup --testing "
-                            + "--no-display",
+                            + "--no-display --=(.*)",
                             args);
         if (!options.ok()) {
             System.err.println("Usage: java signpost.Main [ --seed=NUM ] "
                                + "[ --setup ] "
-                               + "[ --log ] [ --testing ] [ --no-display ]");
+                               + "[ --log ] [ --testing ] [ --no-display ]"
+                               + " [ INPUT ]");
             System.exit(1);
         }
+
+        if (options.contains("--")) {
+            String inpFile = options.getFirst("--");
+            try {
+                System.setIn(new FileInputStream(inpFile));
+            } catch (IOException excp) {
+                System.err.printf("Could not open %s%n", inpFile);
+                System.exit(1);
+            }
+        }                
 
         Controller puzzler = getController(options);
 
