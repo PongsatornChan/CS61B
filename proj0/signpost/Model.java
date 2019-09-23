@@ -195,11 +195,15 @@ class Model implements Iterable<Model.Sq> {
             for (int j = 0; j < _height; j++) {
                 if (model._board[i][j]._successor != null) {
                     Sq succ = model._board[i][j]._successor;
-                    this._board[i][j].connect(this._board[succ.x][succ.y]);
+                    // this._board[i][j].connect(this._board[succ.x][succ.y]);
+                    this._board[i][j]._successor = this._board[succ.x][succ.y];
+                    this._board[succ.x][succ.y]._predecessor = this._board[i][j];
                 }
                 if (model._board[i][j]._predecessor != null) {
                     Sq pred = model._board[i][j]._predecessor;
-                    this._board[i][j].connect(this._board[pred.x][pred.y]);
+                    // this._board[pred.x][pred.y].connect(this._board[i][j]);
+                    this._board[pred.x][pred.y]._successor = this._board[i][j];
+                    this._board[i][j]._predecessor = this._board[pred.x][pred.y];
                 }
                 if (model._board[i][j]._head != null) {
                     Sq currHead = model._board[i][j]._head;
@@ -330,7 +334,7 @@ class Model implements Iterable<Model.Sq> {
                             sq.connect(nextSq);
                             changed = true;
                         }
-                    } else if (nextSq.sequenceNum() == sq.sequenceNum() - 1) {
+                    } else if (nextSq.sequenceNum() == sq.sequenceNum() - 1 && nextSq.sequenceNum() != 0) {
                         if (sq._predecessor == null && nextSq.connectable(sq)) {
                             nextSq.connect(sq);
                             changed = true;
@@ -616,11 +620,11 @@ class Model implements Iterable<Model.Sq> {
             // FIXME _13_
             if (Place.dirOf(this.x, this.y, s1.x, s1.y) == this.direction()) {
                 if (s1.predecessor() == null && this.successor() == null) {
-                    if (this.hasFixedNum() && s1.hasFixedNum()) {
+                    if (this.sequenceNum() != 0 && s1.sequenceNum() != 0) {//if (this.hasFixedNum() && s1.hasFixedNum()) {
                         if (this.sequenceNum() == s1.sequenceNum()-1) {
                             return true;
                         }
-                    } else if (!this.hasFixedNum() && !s1.hasFixedNum()) {
+                    } else if (this.sequenceNum() == 0 && s1.sequenceNum() == 0) { // if (!this.hasFixedNum() && !s1.hasFixedNum()) {
                         if (this.group() != s1.group() || this.group() == -1) {
                             return true;
                         }

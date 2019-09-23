@@ -149,7 +149,7 @@ class PuzzleGenerator implements PuzzleSource {
                             nFound = 1;
                             found = model.get(x);
                             break;
-                        } else if (sq.connectable(model.get(x))) {
+                        } else { //if (sq.connectable(model.get(x))) don't check itself doing
                             nFound++;
                             found = model.get(x);
                         }
@@ -203,7 +203,7 @@ class PuzzleGenerator implements PuzzleSource {
                             nFound = 1;
                             found = model.get(x);
                             break;
-                        } else if (model.get(x).connectable(sq)) {
+                        } else { // if (model.get(x).connectable(sq)) don't check itself doings
                             nFound++;
                             found = model.get(x);
                         }
