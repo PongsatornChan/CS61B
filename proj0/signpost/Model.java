@@ -670,6 +670,9 @@ class Model implements Iterable<Model.Sq> {
             //        + Set my _successor field and S1's _predecessor field.
             this._successor = s1;
             s1._predecessor = this;
+            for (Sq curr = this._successor; curr != null; curr = curr._successor) {
+                curr._head = this._head;
+            }
 
             //        + If I have a number, number all my successors
             //          accordingly (if needed).
@@ -681,15 +684,10 @@ class Model implements Iterable<Model.Sq> {
             //        + If S1 is numbered, number me and my predecessors
             //          accordingly (if needed).
             //        [ 0000000000000 ] + [ Numbered ]
-            if (s1.sequenceNum() != 0 && this.sequenceNum() == 0) {
+            else if (s1.sequenceNum() != 0 && this.sequenceNum() == 0) {
                 numberPredecessors(this._successor);
             }
 
-            //        + Set the _head fields of my successors to my _head.
-            //        Set ALL _head of every members in group s1 to this._head
-            for (Sq curr = this._successor; curr != null; curr = curr._successor) {
-                curr._head = this._head;
-            }
 
             //        + If both this and S1 are unnumbered, set the group of
             //          my head to the result of joining the two groups.
@@ -714,7 +712,6 @@ class Model implements Iterable<Model.Sq> {
             }
             for (Sq sq1 = sq; sq1._successor != null; sq1 = sq1._successor) {
                 sq1._successor._sequenceNum = sq1.sequenceNum() + 1;
-                sq1._successor._head = sq.head();
                 sq1._group = sq.group();
             }
         }
@@ -728,7 +725,7 @@ class Model implements Iterable<Model.Sq> {
                 releaseGroup(sq._predecessor._group);
             }
             for (Sq sq1 = sq; sq1._predecessor != null; sq1 = sq1._predecessor) {
-                sq1._predecessor._sequenceNum = sq._sequenceNum - 1;
+                sq1._predecessor._sequenceNum = sq1._sequenceNum - 1;
                 sq1._predecessor._group = sq.group();
             }
 
@@ -753,13 +750,13 @@ class Model implements Iterable<Model.Sq> {
                 //        element groups.  Create a new group for next.
                     if (this._predecessor == null && next._successor == null) {
                         releaseGroup(this.group());
-                        this._group = -1; this._head = this;
-                        next._group = -1; next._head = next;
+                        this._group = -1;
+                        next._group = -1;
                     } else if (this._predecessor == null) {
-                        this._group = -1; this._head = this;
+                        this._group = -1;
                         next._head = next;
                     } else if (next._successor == null) {
-                        next._group = -1; next._head = next;
+                        next._group = -1;
                     } else {
                         next._group = newGroup();
                     }
@@ -785,9 +782,6 @@ class Model implements Iterable<Model.Sq> {
                         this._group = -1;
                     } else {
                         this._group = newGroup();
-                        for (Sq curr = this; curr != null; curr = curr._predecessor) {
-                            curr._group = this._group;
-                        }
                     }
                 }
 
@@ -817,6 +811,9 @@ class Model implements Iterable<Model.Sq> {
             }
             // FIXME: Set the _head of next and all squares in its group to
             //        next.
+            for (Sq curr = this; curr != null; curr = curr._predecessor) {
+                curr._group = this._group;
+            }
             for (Sq curr = next; curr != null; curr = curr._successor ) {
                 curr._head = next;
                 curr._group = next._group;

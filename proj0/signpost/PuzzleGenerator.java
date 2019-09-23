@@ -143,31 +143,26 @@ class PuzzleGenerator implements PuzzleSource {
                 //        to that numbered square.
                 //        5
                 PlaceList successors = sq.successors();
-                if (sq.sequenceNum() != 0) {
-                    for (Place x: successors) {
-                        if (model.get(x).sequenceNum() != 0 && sq.connectable(model.get(x))) {
-                            nFound = 1;
-                            found = model.get(x);
-                            break;
-                        } else { //if (sq.connectable(model.get(x))) {//don't check itself doing
-                            nFound++;
-                            found = model.get(x);
-                        }
+                PlaceList cSuccessors = new PlaceList();
+                for (Place x: successors) {
+                    if (sq.connectable(model.get(x))) {
+                        nFound++;
+                        cSuccessors.add(x);
+                        found = model.get(x);
                     }
-                } else {
-                    for (Place x : successors) {
-                        if (sq.connectable(model.get(x))) {
-                            nFound++;
+                }
+                if (sq.sequenceNum() != 0) {
+                    for (Place x : cSuccessors) {
+                        if (model.get(x).sequenceNum() != 0) {
+                            assert(model.get(x).sequenceNum() == sq.sequenceNum() + 1);
+                            nFound = 1;
                             found = model.get(x);
                         }
                     }
                 }
-
                 if (nFound == 0) {
                     return 0;
                 } else if (nFound == 1) {
-//                    System.out.println(sq.sequenceNum()+ " " + sq.group()
-//                            + " connect to " + found.sequenceNum()+ " "+found.group());
                     sq.connect(found);
                     result = 2;
                 }
@@ -198,22 +193,19 @@ class PuzzleGenerator implements PuzzleSource {
                 //        to that numbered predecessor.
                 //        6
                 PlaceList predecessors = sq.predecessors();
-                // nFound = predecessors.size();
-                if (sq.sequenceNum() != 0) {
-                    for (Place x: predecessors) {
-                        if (model.get(x).sequenceNum() != 0 && model.get(x).connectable(sq)) {
-                            nFound = 1;
-                            found = model.get(x);
-                            break;
-                        } else { //if (model.get(x).connectable(sq)) { //don't check itself doings
-                            nFound++;
-                            found = model.get(x);
-                        }
+                PlaceList cPredecessors = new PlaceList();
+                for (Place x: predecessors) {
+                    if (model.get(x).connectable(sq)) {
+                        nFound++;
+                        cPredecessors.add(x);
+                        found = model.get(x);
                     }
-                } else {
-                    for (Place x : predecessors) {
-                        if (model.get(x).connectable(sq)) {
-                            nFound++;
+                }
+                if (sq.sequenceNum() != 0) {
+                    for (Place x : cPredecessors) {
+                        if (model.get(x).sequenceNum() != 0) {
+                            assert(model.get(x).sequenceNum() == sq.sequenceNum() - 1);
+                            nFound = 1;
                             found = model.get(x);
                         }
                     }
