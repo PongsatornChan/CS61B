@@ -177,9 +177,15 @@ class Model implements Iterable<Model.Sq> {
         //        _predecessor, and _head fields (which can't necessarily be
         //        set until all the necessary Sq objects are first created.)
         _board = new Sq[_width][_height];
+
         for (int i = 0; i < _width; i++) {
             for (int j =0; j < _height; j++) {
                 _board[i][j] = new Sq(model._board[i][j]);
+            }
+        }
+        for (Sq[] col: _board) {
+            for (Sq sq : col) {
+                _allSquares.add(sq);
             }
         }
 
@@ -653,11 +659,11 @@ class Model implements Iterable<Model.Sq> {
 
             this._successor = s1;
             s1._predecessor = this;
-            if (this.sequenceNum() != 0 && this._successor.sequenceNum() == 0) {
+            if (this.sequenceNum() != 0 && !this._successor.hasFixedNum()) {
                 releaseGroup(this._successor.group());
                 numberSuccessors(this);
             }
-            if (this._successor.sequenceNum() != 0 && this.sequenceNum() == 0) {
+            if (this._successor.sequenceNum() != 0 && !this.hasFixedNum()) {
                 releaseGroup(this.group());
                 numberPredecessors(this._successor);
             }
@@ -668,6 +674,11 @@ class Model implements Iterable<Model.Sq> {
             return true;
         }
 
+        /** give _sequenceNum of all sq's successors an appropiate sequence number
+         *  according to sq's _sequenceNum.
+         *  This method does not change any successor's fixed sequence number.
+         * @param sq
+         */
         void numberSuccessors(Sq sq) {
             assert sq._successor != null;
             for (Sq sq1 = sq; sq1._successor != null; sq1 = sq1._successor) {
@@ -676,6 +687,11 @@ class Model implements Iterable<Model.Sq> {
 
             }
         }
+        /** give _sequenceNum of all sq's predecessors an appropiate sequence number
+         *  according to sq's _sequenceNum.
+         *  This method does not change any predecessor's fixed sequence number.
+         * @param sq
+         */
         void numberPredecessors(Sq sq) {
             assert sq._predecessor != null;
             for (Sq sq1 = sq; sq1._predecessor != null; sq1 = sq1._predecessor) {
@@ -751,22 +767,21 @@ class Model implements Iterable<Model.Sq> {
                     }
                 }
                 if (!hasFixed) {
-                    for (Sq curr = this; curr != null; curr = curr._successor ) {
+                    for (Sq curr = next; curr != null; curr = curr._successor ) {
                         curr._sequenceNum = 0;
                     }
-                    if (this._successor == null) {
-                        this._group = -1;
+                    if (next._successor == null) {
+                        next._group = -1;
                     } else {
-                        this._head._group = newGroup();
+                        next._head._group = newGroup();
                     }
                 }
 
             }
             // FIXME: Set the _head of next and all squares in its group to
             //        next.
-            next._head = next;
-            for (Sq curr = this; curr != null; curr = curr._successor ) {
-                curr._head = next._head;
+            for (Sq curr = next; curr != null; curr = curr._successor ) {
+                curr._head = next;
             }
         }
 

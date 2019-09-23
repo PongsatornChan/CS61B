@@ -34,7 +34,10 @@ class PuzzleGenerator implements PuzzleSource {
      *  Its values will be the sequence numbers (1 to WIDTH x HEIGHT)
      *  appearing in a sequence queen moves on the resulting board.
      *  Unless ALLOWFREEENDS, the first and last sequence numbers will
-     *  appear in the upper-left and lower-right corners, respectively. */
+     *  appear in the upper-left and lower-right corners, respectively.
+     *
+     *  RETURN: Solution
+     */
     private int[][] makePuzzleSolution(int width, int height,
                                        boolean allowFreeEnds) {
         _vals = new int[width][height];
@@ -140,18 +143,24 @@ class PuzzleGenerator implements PuzzleSource {
                 //        to that numbered square.
                 //        5
                 PlaceList successors = sq.successors();
-                nFound = successors.size();
-                if (sq.hasFixedNum()) {
+                if (sq.sequenceNum() != 0) {
                     for (Place x: successors) {
-                        if (model.get(x).hasFixedNum() && sq.connectable(model.get(x))) {
+                        if (model.get(x).sequenceNum() != 0 && sq.connectable(model.get(x))) {
                             nFound = 1;
                             found = model.get(x);
                             break;
+                        } else if (sq.connectable(model.get(x))) {
+                            nFound++;
+                            found = model.get(x);
                         }
                     }
                 } else {
-                    int randomIndex = new Random().nextInt(nFound);
-                    found = model.get(successors.get(randomIndex));
+                    for (Place x : successors) {
+                        if (sq.connectable(model.get(x))) {
+                            nFound++;
+                            found = model.get(x);
+                        }
+                    }
                 }
 
                 if (nFound == 0) {
@@ -187,18 +196,25 @@ class PuzzleGenerator implements PuzzleSource {
                 //        to that numbered predecessor.
                 //        6
                 PlaceList predecessors = sq.predecessors();
-                nFound = predecessors.size();
-                if (sq.hasFixedNum()) {
+                // nFound = predecessors.size();
+                if (sq.sequenceNum() != 0) {
                     for (Place x: predecessors) {
-                        if (model.get(x).hasFixedNum() && model.get(x).connectable(sq)) {
+                        if (model.get(x).sequenceNum() != 0 && model.get(x).connectable(sq)) {
                             nFound = 1;
                             found = model.get(x);
                             break;
+                        } else if (model.get(x).connectable(sq)) {
+                            nFound++;
+                            found = model.get(x);
                         }
                     }
                 } else {
-                    int randomIndex = new Random().nextInt(nFound);
-                    found = model.get(predecessors.get(randomIndex));
+                    for (Place x : predecessors) {
+                        if (model.get(x).connectable(sq)) {
+                            nFound++;
+                            found = model.get(x);
+                        }
+                    }
                 }
 
                 if (nFound == 0) {
