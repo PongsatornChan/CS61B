@@ -38,8 +38,7 @@ public class Main {
                 System.err.printf("Could not open %s%n", inpFile);
                 System.exit(1);
             }
-        }                
-
+        }
         Controller puzzler = getController(options);
 
         try {
