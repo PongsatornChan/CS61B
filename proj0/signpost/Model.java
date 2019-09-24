@@ -302,7 +302,7 @@ class Model implements Iterable<Model.Sq> {
     /** Sets the numbers in my squares to the solution from which I was
      *  last initialized by the constructor. */
     void solve() {
-
+        restart();
         for (Sq sq : _allSquares) {
             sq._sequenceNum = _solution[sq.x][sq.y];
         }
@@ -669,11 +669,13 @@ class Model implements Iterable<Model.Sq> {
             }
             _unconnected += 1;
             next._predecessor = _successor = null;
+
             if (_sequenceNum == 0) {
                 if (this._predecessor == null && next._successor == null) {
                     releaseGroup(this.group());
                     this._group = -1; next._group = -1;
                 } else if (this._predecessor == null) {
+                    next._group = this._group;
                     this._group = -1;
                 } else if (next._successor == null) {
                     next._group = -1;
@@ -716,7 +718,7 @@ class Model implements Iterable<Model.Sq> {
                 }
             }
             for (Sq curr = next; curr != null; curr = curr._successor) {
-                curr._head = next; curr._group = next._group;
+                curr._head = next;
             }
         }
 
