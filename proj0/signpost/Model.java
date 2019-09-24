@@ -621,15 +621,17 @@ class Model implements Iterable<Model.Sq> {
                 numberPredecessors(this._successor);
             }
 
+            if (this.sequenceNum() != 0 && this.group() != 0) {
+                releaseGroup(this.group());
+            } else if (s1.sequenceNum() != 0 && sgroup != 0) {
+                releaseGroup(sgroup);
+            }
+
             if (this.sequenceNum() == 0 && s1.sequenceNum() == 0) {
                 if (this.group() == 0 || sgroup == 0) {
                     System.out.println("Error ");
                 }
                 this._head._group = joinGroups(this.group(), sgroup);
-                for (Sq curr = this._head; curr != null;
-                     curr = curr._successor) {
-                    curr._group = this._head._group;
-                }
             }
             return true;
         }
@@ -641,12 +643,8 @@ class Model implements Iterable<Model.Sq> {
          */
         void numberSuccessors(Sq sq) {
             assert sq._successor != null;
-            if (sq._successor._group > 0) {
-                releaseGroup(sq._successor._group);
-            }
             for (Sq sq1 = sq; sq1._successor != null; sq1 = sq1._successor) {
                 sq1._successor._sequenceNum = sq1.sequenceNum() + 1;
-                sq1._group = sq.group();
             }
 
         }
@@ -657,13 +655,9 @@ class Model implements Iterable<Model.Sq> {
          */
         void numberPredecessors(Sq sq) {
             assert sq._predecessor != null;
-            if (sq._predecessor._group > 0) {
-                releaseGroup(sq._predecessor._group);
-            }
             for (Sq sq1 = sq; sq1._predecessor != null;
                  sq1 = sq1._predecessor) {
                 sq1._predecessor._sequenceNum = sq1._sequenceNum - 1;
-                sq1._predecessor._group = sq.group();
             }
         }
 
@@ -720,9 +714,6 @@ class Model implements Iterable<Model.Sq> {
                         next._group = newGroup();
                     }
                 }
-            }
-            for (Sq curr = this; curr != null; curr = curr._predecessor) {
-                curr._group = this._group;
             }
             for (Sq curr = next; curr != null; curr = curr._successor) {
                 curr._head = next; curr._group = next._group;
