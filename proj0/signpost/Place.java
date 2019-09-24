@@ -103,11 +103,12 @@ class Place {
      *  one queen move away from square (x, y) in direction dir on a
      *  WIDTH x HEIGHT board.  Additionally, M[x][y][0] is a list of all Places
      *  that are a queen move away from (x, y) in any direction (the union of
-     *  the lists of queen moves in directions 1-8). */
+     *  the lists of queen moves in directions 1-8).
+     *  Fix me */
     static PlaceList[][][] successorCells(int width, int height) {
         PlaceList[][][] M = new PlaceList[width][height][9];
         int lim = Math.max(width, height);
-        // FIXME 1
+
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 M[i][j][0] = new PlaceList();

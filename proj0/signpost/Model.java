@@ -668,30 +668,20 @@ class Model implements Iterable<Model.Sq> {
             //          my head to the result of joining the two groups.
             //          _14_
 
-            //        + Set my _successor field and S1's _predecessor field.
             this._successor = s1;
             s1._predecessor = this;
             for (Sq curr = this._successor; curr != null; curr = curr._successor) {
                 curr._head = this._head;
             }
 
-            //        + If I have a number, number all my successors
-            //          accordingly (if needed).
-            //      [ Fix/ Numbered ] + [ 00000000 ]
             if (this.sequenceNum() != 0) {
                 numberSuccessors(this);
             }
 
-            //        + If S1 is numbered, number me and my predecessors
-            //          accordingly (if needed).
-            //        [ 0000000000000 ] + [ Numbered ]
             else if (s1.sequenceNum() != 0) {
                 numberPredecessors(this._successor);
             }
 
-
-            //        + If both this and S1 are unnumbered, set the group of
-            //          my head to the result of joining the two groups.
             if (this.sequenceNum() == 0 && s1.sequenceNum() == 0) {
                 if (this.group() == 0 || sgroup == 0) {
                     System.out.println("Error ");
