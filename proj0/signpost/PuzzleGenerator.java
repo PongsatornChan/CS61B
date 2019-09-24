@@ -214,6 +214,12 @@ class PuzzleGenerator implements PuzzleSource {
                 if (nFound == 0) {
                     return 0;
                 } else if (nFound == 1) {
+                    if (found.sequenceNum() == 0 && found.group() == 0) {
+                        System.out.println("Error 1");
+                    }
+                    if (sq.sequenceNum() == 0 && sq.group() == 0) {
+                        System.out.println("Error 1");
+                    }
                     found.connect(sq);
                     result = 2;
                 }

@@ -678,14 +678,14 @@ class Model implements Iterable<Model.Sq> {
             //        + If I have a number, number all my successors
             //          accordingly (if needed).
             //      [ Fix/ Numbered ] + [ 00000000 ]
-            if (this.sequenceNum() != 0 && s1.sequenceNum() != this.sequenceNum() + 1) {
+            if (this.sequenceNum() != 0) {
                 numberSuccessors(this);
             }
 
             //        + If S1 is numbered, number me and my predecessors
             //          accordingly (if needed).
             //        [ 0000000000000 ] + [ Numbered ]
-            else if (s1.sequenceNum() != 0 && this.sequenceNum() != s1.sequenceNum() - 1) {
+            else if (s1.sequenceNum() != 0) {
                 numberPredecessors(this._successor);
             }
 
