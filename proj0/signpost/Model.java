@@ -132,7 +132,8 @@ class Model implements Iterable<Model.Sq> {
                 _board[currPlace.x][currPlace.y] =
                         new Sq(currPlace.x, currPlace.y, 0, false, currPlace.dirOf(nextPlace), -1);
         }
-        _board[_solnNumToPlace[last].x][_solnNumToPlace[last].y] = new Sq(_width-1, 0, last, true, 0, 0);
+        _board[_solnNumToPlace[last].x][_solnNumToPlace[last].y] =
+                new Sq(_solnNumToPlace[last].x,  _solnNumToPlace[last].y, last, true, 0, 0);
 
         for (Sq[] col: _board) {
            for (Sq sq : col) {
@@ -151,7 +152,7 @@ class Model implements Iterable<Model.Sq> {
             if (sq.direction() != 0) {
                 sq._successors = _allSuccessors[sq.x][sq.y][sq.direction()];
                 for (Place pl : sq.successors()) {
-                    if (pl != Place.pl(0,_height-1)) {
+                    if (pl != _solnNumToPlace[1]) { //if (pl != Place.pl(0,_height-1)) {
                         if (_board[pl.x][pl.y].predecessors() == null) {
                             _board[pl.x][pl.y]._predecessors = new PlaceList();
                         }
@@ -677,21 +678,24 @@ class Model implements Iterable<Model.Sq> {
             //        + If I have a number, number all my successors
             //          accordingly (if needed).
             //      [ Fix/ Numbered ] + [ 00000000 ]
-            if (this.sequenceNum() != 0 && s1.sequenceNum() == 0) {
+            if (this.sequenceNum() != 0 && s1.sequenceNum() != this.sequenceNum() + 1) {
                 numberSuccessors(this);
             }
 
             //        + If S1 is numbered, number me and my predecessors
             //          accordingly (if needed).
             //        [ 0000000000000 ] + [ Numbered ]
-            else if (s1.sequenceNum() != 0 && this.sequenceNum() == 0) {
+            else if (s1.sequenceNum() != 0 && this.sequenceNum() != s1.sequenceNum() - 1) {
                 numberPredecessors(this._successor);
             }
 
 
             //        + If both this and S1 are unnumbered, set the group of
             //          my head to the result of joining the two groups.
-            if (this.sequenceNum() == 0 && this._successor.sequenceNum() == 0) {
+            if (this.sequenceNum() == 0 && s1.sequenceNum() == 0) {
+                if (this.group() == 0 || sgroup == 0) {
+                    System.out.println("Error ");
+                }
                 this._head._group = joinGroups(this.group(), sgroup);
                 for (Sq curr = this._head; curr != null; curr = curr._successor) {
                     curr._group = this._head._group;
@@ -714,6 +718,7 @@ class Model implements Iterable<Model.Sq> {
                 sq1._successor._sequenceNum = sq1.sequenceNum() + 1;
                 sq1._group = sq.group();
             }
+
         }
         /** give _sequenceNum of all sq's predecessors an appropiate sequence number
          *  according to sq's _sequenceNum.
@@ -728,7 +733,6 @@ class Model implements Iterable<Model.Sq> {
                 sq1._predecessor._sequenceNum = sq1._sequenceNum - 1;
                 sq1._predecessor._group = sq.group();
             }
-
         }
 
         /** Disconnect me from my current successor, if any. */

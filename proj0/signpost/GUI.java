@@ -141,7 +141,7 @@ class GUI extends TopLevel implements View {
                 if (width >= 1 && height >= 1) {
                     _pendingCommands.offer(String.format("TYPE %d %d%s",
                                                          width, height,
-                                                         free ? " free" : ""));
+                                                         free ? " FREE" : ""));
                 }
             } else {
                 showMessage("Bad board size chosen.", "Error", "error");
