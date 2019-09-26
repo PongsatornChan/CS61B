@@ -1,18 +1,27 @@
 /** A WeirdList holds a sequence of integers.
- * @author your name here
+ * @author Pongsatorn Chanpanichravee
  */
 public class WeirdList {
     /** The empty sequence of integers. */
     public static final WeirdList EMPTY =
-        null;  // TODO: REPLACE THIS LINE
+        new endList();
+
+    /** item in this node */
+    private int head;
+
+    /** pointer that point to the next one */
+    private WeirdList tail;
 
     /** A new WeirdList whose head is HEAD and tail is TAIL. */
-  public WeirdList(int head, WeirdList tail) { /* TODO: FILL IN */ }
+  public WeirdList(int head, WeirdList tail) {
+      this.head = head;
+      this.tail = tail;
+  }
 
     /** Returns the number of elements in the sequence that
      *  starts with THIS. */
     public int length() {
-        return 0;  // TODO: REPLACE THIS LINE
+        return 1 + tail.length();
     }
 
     /** Return a string containing my contents as a sequence of numerals
@@ -20,15 +29,40 @@ public class WeirdList {
      *  5, 4, and 2, this returns " 5 4 2". */
     @Override
     public String toString() {
-        return ""; // TODO: REPLACE THIS LINE
+        String result = " " + this.head + this.tail.toString();
+        return result;
     }
 
     /** Part 3b: Apply FUNC.apply to every element of THIS WeirdList in
      *  sequence, and return a WeirdList of the resulting values. */
     public WeirdList map(IntUnaryFunction func) {
-        return null;  // TODO: REPLACE THIS LINE
+        return new WeirdList(func.apply(this.head), this.tail.map(func));
     }
 
+    private static class endList extends WeirdList {
+
+        public endList() {
+            super(0, null);
+        }
+
+        /** Return a 1 since it is the last element */
+        @Override
+        public int length() {
+            return 0;
+        }
+
+        /** Return empty String */
+        @Override
+        public String toString() {
+            return "";
+        }
+
+        /** Return itself */
+        @Override
+        public WeirdList map(IntUnaryFunction func) {
+            return this;
+        }
+    }
     /*
      * You should not add any methods to WeirdList, but you will need
      * to add private fields (e.g. head).
