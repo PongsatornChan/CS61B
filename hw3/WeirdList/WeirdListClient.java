@@ -13,21 +13,26 @@ class WeirdListClient {
         return sum.getSum();
     }
 
+    /** Class implement IntUnaryFunction to do the adding */
     private static class Adder implements IntUnaryFunction {
 
+        /** what to add to x */
         private int anInt;
 
         public Adder(int n) {
             anInt = n;
         }
 
+        /** return add anInt to x */
         public int apply(int x) {
             return anInt + x;
         }
     }
 
+    /** Class that will do the summing and storing sum */
     private static class Summer implements IntUnaryFunction {
 
+        /** hold the current sum */
         private int sum;
 
         public Summer() {
@@ -39,6 +44,7 @@ class WeirdListClient {
             return sum;
         }
 
+        /** get the current sum */
         public int getSum() {
             return sum;
         }
