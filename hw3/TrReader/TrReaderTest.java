@@ -27,6 +27,14 @@ public class TrReaderTest {
         assertEquals(250, trR.read(cbuf));
         String result = new String(cbuf);
         assertEquals(TRANSLATION.substring(0, 250), result);
+
+        StringReader t = new StringReader("Hello there. General Kanobi");
+        trR = new TrReader(t, "", "");
+        char[] cbuffer = new char[27];
+
+        assertEquals(27, trR.read(cbuffer));
+        result = new String(cbuffer);
+        assertEquals("Hello there. General Kanobi", result);
     }
 
     /** Return a StringReader that contains the contents delivered by R,

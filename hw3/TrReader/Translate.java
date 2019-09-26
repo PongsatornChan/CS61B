@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 
 /** String translation.
  *  @author your name here
@@ -12,7 +14,12 @@ public class Translate {
         /* NOTE: The try {...} catch is a technicality to keep Java happy. */
         char[] buffer = new char[S.length()];
         try {
-            throw new IOException(); //TODO: REPLACE THIS LINE WITH YOUR CODE.
+            Reader r = new StringReader(S);
+            TrReader translater = new TrReader(r, from, to);
+            char[] buf = new char[S.length()];
+            translater.read(buf);
+            String result = new String(buf);
+            return result;
         } catch (IOException e) {
             return null;
         }
