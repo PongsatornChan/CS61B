@@ -4,7 +4,7 @@ import utils.Filter;
 
 /** A kind of Filter that tests the elements of its input sequence of
  *  VALUES by applying a Predicate object to them.
- *  @author You
+ *  @author Pongsatorn Chanpancihravee
  */
 class PredicateFilter<Value> extends Filter<Value> {
 
@@ -12,14 +12,14 @@ class PredicateFilter<Value> extends Filter<Value> {
      *  delivering only those for which PRED is true. */
     PredicateFilter(Predicate<Value> pred, Iterator<Value> input) {
         super(input); //FIXME ??
-        // FIXME: REPLACE THIS LINE WITH YOUR CODE
+        this.pred = pred;
     }
 
     @Override
     protected boolean keep() {
-        return false;  // FIXME: REPLACE THIS LINE WITH YOUR CODE
+        return pred.test(_next);
     }
 
-    // FIXME: REPLACE THIS LINE WITH YOUR CODE
+    private Predicate<Value> pred;
 
 }
