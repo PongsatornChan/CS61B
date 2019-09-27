@@ -1,5 +1,7 @@
 import utils.Filter;
 import utils.Predicate;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -35,36 +37,46 @@ public class FilterClient {
             System.out.println(L);
             Filter<Integer> f1 = new TrivialFilter<Integer>(L.iterator());
             printAll(f1);
+            System.out.println();
             // ADD TO ME IF NEEDED
+
+            List<Integer> L1 = Arrays.asList(data);
+            System.out.println(L1);
+            Filter<Integer> filter4 = everyFourth(L1.iterator());
+            printAll(filter4);
+            System.out.println();
+
+            List<Integer> L2 = Arrays.asList(data);
+            System.out.println(L2);
+            Filter<Integer> filterEven = evenNumberFilter(L2.iterator());
+            printAll(filterEven);
+            System.out.println();
+
         }
     }
 
-    /* Extra Challenges that you should complete without creating
-       any new Filter implementations (i.e. you can create them
-       using Trivial, Alternating, Monotonic, and/or PredicateFilter)
-       1. Create a filter everyFourth that prints every fourth
-       item.
-       2. Create a filter that prints only even valued items. You
-       may find the Even class provided below to be helpful. */
 
     /** Returns a filter that delivers every fourth item of INPUT,
      *  starting with the first.  You should not need to define a new
      *  class. */
     static Filter<Integer> everyFourth(Iterator<Integer> input) {
-        return null;  // FIXME: REPLACE THIS LINE WITH YOUR CODE
+        AlternatingFilter<Integer> a1 = new AlternatingFilter<Integer>(input);
+        AlternatingFilter<Integer> a2 = new AlternatingFilter<>(a1);
+        return a2;
     }
 
     /** Returns a filter that delivers every even valued integer of
      *  INPUT. You should not need to define a new class. */
     static Filter<Integer> evenNumberFilter(Iterator<Integer> input) {
-        return null; // FIXME: REPLACE THIS LINE WITH YOUR CODE
+        PredicateFilter<Integer> a1 = new PredicateFilter<Integer>(new Even(), input);
+        return a1;
     }
 
     /** A class whose instances represent the test for evenness. */
     static class Even implements Predicate<Integer> {
         @Override
         public boolean test(Integer x) {
-            return false; // FIXME: REPLACE THIS LINE WITH YOUR CODE
+            return x % 2 == 0;
         }
     }
 }
