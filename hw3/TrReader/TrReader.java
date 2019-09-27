@@ -49,7 +49,6 @@ public class TrReader extends Reader {
             if (source.read() == -1) {
                 return -1;
             }
-            numCharRead++;
         }
         for (int i = 0; i < count; i++) {
             int srcIn = source.read();
@@ -63,7 +62,7 @@ public class TrReader extends Reader {
                     }
                 }
             } else {
-                return -1;
+                return numCharRead;
             }
         }
         return numCharRead;
