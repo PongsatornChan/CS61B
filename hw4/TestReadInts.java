@@ -1,4 +1,8 @@
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.Rule;
+
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.*;
 import java.util.List;
 import java.util.InputMismatchException;
@@ -18,17 +22,22 @@ public class TestReadInts {
         ReadInts.printInts(inp);
     }
 
+    @Rule public ExpectedException expected = ExpectedException.none();
+
     @Test
     public void testReadInts() {
+        expected.expect(InputMismatchException.class);
         List<Integer> actual = ReadInts.readInts("5   12   6   2 3");
         List<Integer> expected = Utils.createList(5, 12, 6, 2, 3);
         assertEquals(expected, actual);
-        try {
-            ReadInts.readInts("5 1 3 dog horse 9");
-            fail("Exception should have been thrown!");
-        } catch (InputMismatchException e) {
-            /* Ignore InputMismatchException. */
-        }
+
+        ReadInts.readInts("5 1 3 dog horse 9");
+//        try {
+//            ReadInts.readInts("5 1 3 dog horse 9");
+//            fail("Exception should have been thrown!");
+//        } catch (InputMismatchException e) {
+//            /* Ignore InputMismatchException. */
+//        }
     }
 
     @Test
