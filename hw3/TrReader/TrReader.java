@@ -62,7 +62,7 @@ public class TrReader extends Reader {
                     }
                 }
             } else {
-                return numCharRead;
+                return -1;
             }
         }
         return numCharRead;
