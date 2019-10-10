@@ -36,18 +36,22 @@ class MovingRotor extends Rotor {
     @Override
     void advance() {
         if (this.rotates()) {
-            if (rightRotor != null) {
-                if (rightRotor.atNotch()) {
-                    set((setting() + 1) % size());
-                }
-            } else {
-                set((setting() + 1) % size());
-            }
+            set((setting() + 1) % size());
         }
     }
 
     @Override
-    boolean rotates() { return true; }
+    boolean rotates() {
+        if (rightRotor != null) {
+            if (rightRotor.atNotch()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
 
     @Override
     boolean atNotch() {
