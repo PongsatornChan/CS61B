@@ -49,6 +49,9 @@ public class PermutationTest {
     public void checkIdTransform() {
         perm = new Permutation("", UPPER);
         checkPerm("identity", UPPER_STRING, UPPER_STRING);
+
+        perm = new Permutation("(AB) (C)", new Alphabet("ABCD"));
+        checkPerm("identity", "ABCD", "BACD");
     }
 
 }

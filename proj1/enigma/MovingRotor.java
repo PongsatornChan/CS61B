@@ -1,9 +1,11 @@
 package enigma;
 
+import java.util.ArrayList;
+
 import static enigma.EnigmaException.*;
 
 /** Class that represents a rotating rotor in the enigma machine.
- *  @author
+ *  @author Pongsatorn Chanpanichravee
  */
 class MovingRotor extends Rotor {
 
@@ -12,18 +14,52 @@ class MovingRotor extends Rotor {
      *  The Rotor is initally in its 0 setting (first character of its
      *  alphabet).
      */
-    MovingRotor(String name, Permutation perm, String notches) {
+    MovingRotor(String name, Permutation perm, String inNotches) {
         super(name, perm);
-        // FIXME
+        rightRotor = null;
+        this.notches = new ArrayList<>();
+        for (int i = 0; i < inNotches.length(); i++) {
+            this.notches.add(perm.alphabet().toInt(inNotches.charAt(i)));
+        }
     }
 
-    // FIXME?
+    MovingRotor(String name, Permutation perm, String inNotches, Rotor right) {
+        super(name, perm);
+        rightRotor = right;
+        this.notches = new ArrayList<>();
+        for (int i = 0; i < inNotches.length(); i++) {
+            this.notches.add(perm.alphabet().toInt(inNotches.charAt(i)));
+        }
+    }
+
 
     @Override
     void advance() {
-        // FIXME
+        if (this.rotates()) {
+            if (rightRotor != null) {
+                if (rightRotor.atNotch()) {
+                    set((setting() + 1) % size());
+                }
+            } else {
+                set((setting() + 1) % size());
+            }
+        }
+    }
+
+    @Override
+    boolean rotates() { return true; }
+
+    @Override
+    boolean atNotch() {
+        for (int n : notches) {
+            if (n == setting()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // FIXME: ADDITIONAL FIELDS HERE, AS NEEDED
-
+    private ArrayList<Integer> notches;
+    Rotor rightRotor;
 }
