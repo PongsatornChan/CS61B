@@ -223,9 +223,9 @@ public class GraphSorters extends JPanel {
                 int by = 0;
                 int nrepeats = 0;
                 if(args.length == 0 ) {
-                    ntrials = 50;
-                    by = 100;
-                    nrepeats = 10;
+                    ntrials = 15;
+                    by = 50;
+                    nrepeats = 100;
                 } else if (args.length == 3) {
                     ntrials = Integer.parseInt(args[0]);
                     by = Integer.parseInt(args[1]);
