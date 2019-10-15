@@ -23,14 +23,14 @@ class MovingRotor extends Rotor {
         }
     }
 
-    MovingRotor(String name, Permutation perm, String inNotches, Rotor right) {
-        super(name, perm);
-        rightRotor = right;
-        this.notches = new ArrayList<>();
-        for (int i = 0; i < inNotches.length(); i++) {
-            this.notches.add(perm.alphabet().toInt(inNotches.charAt(i)));
-        }
-    }
+//    MovingRotor(String name, Permutation perm, String inNotches, Rotor right) {
+//        super(name, perm);
+//        rightRotor = right;
+//        this.notches = new ArrayList<>();
+//        for (int i = 0; i < inNotches.length(); i++) {
+//            this.notches.add(perm.alphabet().toInt(inNotches.charAt(i)));
+//        }
+//    }
 
 
     @Override
@@ -42,15 +42,16 @@ class MovingRotor extends Rotor {
 
     @Override
     boolean rotates() {
-        if (rightRotor != null) {
-            if (rightRotor.atNotch()) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
+//        if (rightRotor != null) {
+//            if (rightRotor.atNotch()) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else {
+//            return true;
+//        }
+        return true;
     }
 
     @Override
@@ -62,6 +63,7 @@ class MovingRotor extends Rotor {
         }
         return false;
     }
+
 
     // FIXME: ADDITIONAL FIELDS HERE, AS NEEDED
     private ArrayList<Integer> notches;

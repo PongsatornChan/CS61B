@@ -16,44 +16,95 @@ class Machine {
     Machine(Alphabet alpha, int numRotors, int pawls,
             Collection<Rotor> allRotors) {
         _alphabet = alpha;
+        _rotorSlot = new Rotor[numRotors];
+        _numPawl = pawls;
+        _rotors = new HashMap<String, Rotor>();
+        for ( Rotor rotor : allRotors) {
+            _rotors.put(rotor.name(), rotor);
+        }
+        _plugboard = new Permutation("", _alphabet);
+
         // FIXME
     }
 
     /** Return the number of rotor slots I have. */
     int numRotors() {
-        return 0; // FIXME
+        return _rotorSlot.length;
     }
 
     /** Return the number pawls (and thus rotating rotors) I have. */
     int numPawls() {
-        return 0; // FIXME
+        return _numPawl;
     }
 
     /** Set my rotor slots to the rotors named ROTORS from my set of
      *  available rotors (ROTORS[0] names the reflector).
      *  Initially, all rotors are set at their 0 setting. */
     void insertRotors(String[] rotors) {
-        // FIXME
+        for (int i = 0; i < _rotorSlot.length; i++) {
+            _rotorSlot[i] = _rotors.get(rotors[i]);
+            _rotorSlot[i].set(0);
+        }
+
     }
 
     /** Set my rotors according to SETTING, which must be a string of
      *  numRotors()-1 characters in my alphabet. The first letter refers
      *  to the leftmost rotor setting (not counting the reflector).  */
     void setRotors(String setting) {
-        // FIXME
+        if (setting.length() != numRotors() - 1 ) {
+            throw new EnigmaException("Wrong initial setting");
+        }
+        for (int i = 1; i < numRotors(); i++ ) {
+            _rotorSlot[i].set(setting.charAt(i - 1));
+        }
     }
 
     /** Set the plugboard to PLUGBOARD. */
     void setPlugboard(Permutation plugboard) {
-        // FIXME
+        _plugboard = plugboard;
     }
 
     /** Returns the result of converting the input character C (as an
      *  index in the range 0..alphabet size - 1), after first advancing
-
      *  the machine. */
     int convert(int c) {
-        return 0; // FIXME
+        moveRotors();
+        int result = _plugboard.permute(c);
+        for (int i = numRotors() - 1; i >= 0; i--) {
+            result = _rotorSlot[i].convertForward(result);
+        }
+        for (int i = 1; i < numRotors(); i++) {
+            result = _rotorSlot[i].convertBackward(result);
+        }
+        result = _plugboard.permute(result);
+        return result;
+    }
+
+    /** Advance all the rotor if possible
+     * @return number of rotors move
+     */
+    int moveRotors() {
+        boolean[] moves = new boolean[numRotors()];
+        int numMove = 0;
+        for (int i = numRotors() - numPawls(); i < numRotors(); i++) {
+            if (i == numRotors() - 1) {
+                moves[numPawls() - 1] = true;
+            } else {
+                if (_rotorSlot[i + 1].atNotch()) {
+                    moves[i] = true;
+                } else {
+                    moves[i] = false;
+                }
+            }
+        }
+        for (int i = numRotors() - numRotors(); i < numRotors(); i++) {
+            if (moves[i]) {
+                _rotorSlot[i].advance();
+                numMove++;
+            }
+        }
+        return numMove;
     }
 
     /** Returns the encoding/decoding of MSG, updating the state of
@@ -66,4 +117,11 @@ class Machine {
     private final Alphabet _alphabet;
 
     // FIXME: ADDITIONAL FIELDS HERE, IF NEEDED.
+    private Rotor[] _rotorSlot;
+
+    private final int _numPawl;
+
+    private final HashMap<String, Rotor> _rotors;
+
+    private Permutation _plugboard;
 }
