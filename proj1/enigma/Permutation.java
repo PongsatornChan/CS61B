@@ -1,6 +1,7 @@
 package enigma;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import static enigma.EnigmaException.*;
 
@@ -10,6 +11,7 @@ import static enigma.EnigmaException.*;
  */
 class Permutation {
 
+    Pattern cyclePattern = Pattern.compile("[(][a-zA-Z]+[)]");
     /** Set this Permutation to that specified by CYCLES, a string in the
      *  form "(cccc) (cc) ..." where the c's are characters in ALPHABET, which
      *  is interpreted as a permutation in cycle notation.  Characters in the
@@ -18,19 +20,25 @@ class Permutation {
     Permutation(String cycles, Alphabet alphabet) {
         _alphabet = alphabet;
         translateSets = new ArrayList<>();
-        String [] sets = cycles.split(" ");
+        String [] sets = cycles.split("([)] *[(])|( *[(])| |[)]");
         for (int i = 0; i < sets.length ; i++) {
-            sets[i] = sets[i].replace('(', ' ');
-            sets[i] = sets[i].replace(')', ' ');
-            sets[i] = sets[i].trim();
-            translateSets.add(sets[i]);
+            if (sets[i] != "") {
+                translateSets.add(sets[i]);
+            }
         }
     }
 
-    /** Add the cycle c0->c1->...->cm->c0 to the permutation, where CYCLE is
-     *  c0c1...cm. */
-    private void addCycle(String cycle) {
-        translateSets.add(cycle);
+    /** reuse as a function to handle multiple line input
+     *  Cycle is in form "(cccc) (cc) ..."
+     * @param cycles
+     */
+     void addCycle(String cycles) {
+        String [] sets = cycles.split("([)] *[(])|( *[(])| |[)]");
+        for (int i = 0; i < sets.length ; i++) {
+            if (sets[i] != "") {
+                translateSets.add(sets[i]);
+            }
+        }
     }
 
     /** Return the value of P modulo the size of this permutation. */

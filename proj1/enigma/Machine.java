@@ -1,5 +1,6 @@
 package enigma;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Collection;
 
@@ -85,21 +86,16 @@ class Machine {
      * @return number of rotors move
      */
     int moveRotors() {
-        boolean[] moves = new boolean[numRotors()];
         int numMove = 0;
-        for (int i = numRotors() - numPawls(); i < numRotors(); i++) {
+        int firstMoving = numRotors() - numPawls();
+        for (int i = firstMoving; i < numRotors(); i++) {
             if (i == numRotors() - 1) {
-                moves[numPawls() - 1] = true;
-            } else {
-                if (_rotorSlot[i + 1].atNotch()) {
-                    moves[i] = true;
-                } else {
-                    moves[i] = false;
-                }
-            }
-        }
-        for (int i = numRotors() - numRotors(); i < numRotors(); i++) {
-            if (moves[i]) {
+                _rotorSlot[i].advance();
+                numMove++;
+            } else if (_rotorSlot[i + 1].atNotch()) {
+                _rotorSlot[i].advance();
+                numMove++;
+            } else if (_rotorSlot[i].atNotch() && i != firstMoving) {
                 _rotorSlot[i].advance();
                 numMove++;
             }
@@ -110,7 +106,21 @@ class Machine {
     /** Returns the encoding/decoding of MSG, updating the state of
      *  the rotors accordingly. */
     String convert(String msg) {
-        return ""; // FIXME
+        ArrayList<Character> result = new ArrayList<Character>();
+        for (int i = 0; i < msg.length(); i++) {
+            if (i % 10 == 4 || i % 10 == 9) {
+                result.add(' ');
+            } else if (_alphabet.contains(msg.charAt(i))) {
+                int c = _alphabet.toInt(msg.charAt(i));
+                c = convert(c);
+                result.add(_alphabet.toChar(c));
+            }
+        }
+        char[] charList = new char[result.size()];
+        for (int i = 0; i < result.size(); i++) {
+            charList[i] = result.get(i);
+        }
+        return new String(charList);
     }
 
     /** Common alphabet of my rotors. */

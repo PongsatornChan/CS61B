@@ -38,6 +38,9 @@ class Alphabet {
     /** Returns character number INDEX in the alphabet, where
      *  0 <= INDEX < size(). */
     char toChar(int index) {
+        if (index >= size() || index < 0) {
+            throw new EnigmaException("Index out of bound");
+        }
         return list.get(index);
     }
 
@@ -45,7 +48,7 @@ class Alphabet {
      *  the alphabet. This is the inverse of toChar(). */
     int toInt(char ch) {
         if (!list.contains(ch)) {
-            throw new EnigmaException("Character is not in alphabet list");
+            return -1;
         }
         return list.indexOf(ch);
     }
