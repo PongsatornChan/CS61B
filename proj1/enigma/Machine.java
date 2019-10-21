@@ -1,8 +1,6 @@
 package enigma;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Collection;
+import java.util.*;
 
 import static enigma.EnigmaException.*;
 
@@ -19,13 +17,11 @@ class Machine {
         _alphabet = alpha;
         _rotorSlot = new Rotor[numRotors];
         _numPawl = pawls;
-        _rotors = new HashMap<String, Rotor>();
+        _rotors = new TreeMap<String, Rotor>(String.CASE_INSENSITIVE_ORDER);
         for ( Rotor rotor : allRotors) {
             _rotors.put(rotor.name(), rotor);
         }
         _plugboard = new Permutation("", _alphabet);
-
-        // FIXME
     }
 
     /** Return the number of rotor slots I have. */
@@ -108,11 +104,12 @@ class Machine {
     String convert(String msg) {
         ArrayList<Character> result = new ArrayList<Character>();
         for (int i = 0; i < msg.length(); i++) {
-            if (i % 10 == 4 || i % 10 == 9) {
-                result.add(' ');
-            } else if (_alphabet.contains(msg.charAt(i))) {
+            if (_alphabet.contains(msg.charAt(i))) {
                 int c = _alphabet.toInt(msg.charAt(i));
                 c = convert(c);
+                if (result.size() % 6 == 5) {
+                    result.add(' ');
+                }
                 result.add(_alphabet.toChar(c));
             }
         }
@@ -131,7 +128,7 @@ class Machine {
 
     private final int _numPawl;
 
-    private final HashMap<String, Rotor> _rotors;
+    private final Map<String, Rotor> _rotors;
 
     private Permutation _plugboard;
 }

@@ -1,12 +1,14 @@
 package enigma;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import static enigma.EnigmaException.*;
 
@@ -14,6 +16,11 @@ import static enigma.EnigmaException.*;
  *  @author
  */
 public final class Main {
+
+    Pattern alphaPattern = Pattern.compile("[a-zA-Z]+");
+    Pattern cyclePattern = Pattern.compile("([(][A-Z]+[)] *)*");
+    Pattern rotorPattern = Pattern.compile("([A-Z][a-zA-Z]*) ([MNR][A-Z]*)( *[(][A-Z]+[)])+");
+    Pattern settingPattern = Pattern.compile(" ([0-9]+) ([0-9]+)");
 
     /** Process a sequence of encryptions and decryptions, as
      *  specified by ARGS, where 1 <= ARGS.length <= 3.
@@ -77,25 +84,86 @@ public final class Main {
      *  file _config and apply it to the messages in _input, sending the
      *  results to _output. */
     private void process() {
-        // FIXME
+        Machine enigma = readConfig();
+
+        while (_input.hasNextLine()) {
+            String input = _input.nextLine();
+            if (input.charAt(0) == '*') {
+                setUp(enigma, input);
+            } else {
+                String output = enigma.convert(input.toUpperCase());
+                printMessageLine(output);
+            }
+        }
     }
 
     /** Return an Enigma machine configured from the contents of configuration
      *  file _config. */
     private Machine readConfig() {
         try {
-            // FIXME
-            _alphabet = new Alphabet();
-            return new Machine(_alphabet, 2, 1, null);
+            Scanner scanner = _config;
+            String buffer = scanner.nextLine();
+            _alphabet = new Alphabet(buffer);
+
+            int numRotor = 0;
+            int numPawl = 0;
+            buffer = scanner.nextLine();
+            if (settingPattern.matcher(buffer).matches()) {
+                String[] strList = buffer.trim().split(" ");
+                if (strList.length == 2) {
+                    numRotor = Integer.parseInt(strList[0]);
+                    numPawl = Integer.parseInt(strList[1]);
+                }
+            } else {
+                throw new EnigmaException("Wrong format: " + buffer);
+            }
+            ArrayList<Rotor> allRotors = readRotor();
+            Machine enigma = new Machine(_alphabet, numRotor, numPawl, allRotors);
+            return enigma;
         } catch (NoSuchElementException excp) {
             throw error("configuration file truncated");
         }
     }
 
     /** Return a rotor, reading its description from _config. */
-    private Rotor readRotor() {
+    private ArrayList<Rotor> readRotor() {
         try {
-            return null; // FIXME
+            Scanner scanner = _config;
+            ArrayList<Rotor> allRotors = new ArrayList<Rotor>();
+            while (scanner.hasNextLine()) {
+                String input = scanner.nextLine();
+                input = input.trim();
+                if (rotorPattern.matcher(input).matches()) {
+                    String[] rotorConfig = input.split(" +", 3);
+                    String nameRotor = rotorConfig[0];
+                    String notches = rotorConfig[1];
+                    String cycles = rotorConfig[2];
+                    Permutation perm;
+                    if (cyclePattern.matcher(cycles).matches()) {
+                        perm = new Permutation(cycles, _alphabet);
+                    } else {
+                        throw new EnigmaException("Wrong cycle format: " + cycles);
+                    }
+                    Rotor rotor;
+                    if (notches.charAt(0) == 'M') {
+                        rotor = new MovingRotor(nameRotor, perm, notches.substring(1));
+                    } else if (notches.charAt(0) == 'N') {
+                        rotor = new Rotor(nameRotor, perm);
+                    } else if (notches.charAt(0) == 'R') {
+                        rotor = new Reflector(nameRotor, perm);
+                    } else {
+                        throw new EnigmaException("Wrong notch format: " + notches);
+                    }
+                    allRotors.add(rotor);
+                } else if (cyclePattern.matcher(input).matches()) {
+                    Rotor prevRotor = allRotors.get(allRotors.size() - 1);
+                    Permutation perm = prevRotor.permutation();
+                    perm.addCycle(input);
+                } else {
+                    throw new EnigmaException("Wrong format: " + input);
+                }
+            }
+            return allRotors;
         } catch (NoSuchElementException excp) {
             throw error("bad rotor description");
         }
@@ -104,13 +172,25 @@ public final class Main {
     /** Set M according to the specification given on SETTINGS,
      *  which must have the format specified in the assignment. */
     private void setUp(Machine M, String settings) {
-        // FIXME
+        String[] strList = settings.split(" +");
+        String[] names = new String[M.numRotors()];
+        for (int i = 1; i <= names.length; i++) {
+            names[i - 1] = strList[i];
+        }
+        M.insertRotors(names);
+        M.setRotors(strList[M.numRotors() + 1]);
+
+        strList = settings.split(" [(]", 2);
+        if (strList.length == 2) {
+            strList[1] = "(" + strList[1];
+            M.setPlugboard(new Permutation(strList[1], _alphabet));
+        }
     }
 
     /** Print MSG in groups of five (except that the last group may
      *  have fewer letters). */
     private void printMessageLine(String msg) {
-        // FIXME
+        _output.println(msg);
     }
 
     /** Alphabet used in this machine. */
