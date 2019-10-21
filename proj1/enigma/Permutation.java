@@ -12,7 +12,6 @@ import static enigma.EnigmaException.*;
  */
 class Permutation {
 
-    Pattern cyclePattern = Pattern.compile("([(]([^\\*\\(\\)\\s])+[)]\\s*)*");
     /** Set this Permutation to that specified by CYCLES, a string in the
      *  form "(cccc) (cc) ..." where the c's are characters in ALPHABET, which
      *  is interpreted as a permutation in cycle notation.  Characters in the
@@ -23,10 +22,10 @@ class Permutation {
         translateSets = new ArrayList<>();
         if (cyclePattern.matcher(cycles).matches()) {
             Scanner scan = new Scanner(cycles);
-            String cycle = scan.findWithinHorizon("([^\\*\\(\\)\\s])+",0);
+            String cycle = scan.findWithinHorizon("([^\\*\\(\\)\\s])+", 0);
             while (cycle != null) {
                 translateSets.add(cycle);
-                cycle = scan.findWithinHorizon("([^\\*\\(\\)\\s])+",0);
+                cycle = scan.findWithinHorizon("([^\\*\\(\\)\\s])+", 0);
             }
         } else {
             throw new EnigmaException("Cycle is in wrong format.");
@@ -34,15 +33,18 @@ class Permutation {
     }
 
     /** reuse as a function to handle multiple line input
-     *  Cycle is in form "(cccc) (cc) ..."
-     * @param cycles
+     *  CYCLES is in form "(cccc) (cc) ...".
      */
-     void addCycle(String cycles) {
-        String [] sets = cycles.split("([)] *[(])|( *[(])| |[)]");
-        for (int i = 0; i < sets.length ; i++) {
-            if (sets[i] != "") {
-                translateSets.add(sets[i]);
+    void addCycle(String cycles) {
+        if (cyclePattern.matcher(cycles).matches()) {
+            Scanner scan = new Scanner(cycles);
+            String cycle = scan.findWithinHorizon("([^\\*\\(\\)\\s])+", 0);
+            while (cycle != null) {
+                translateSets.add(cycle);
+                cycle = scan.findWithinHorizon("([^\\*\\(\\)\\s])+", 0);
             }
+        } else {
+            throw new EnigmaException("Cycle is in wrong format.");
         }
     }
 
@@ -84,8 +86,8 @@ class Permutation {
         char outChar;
         for (String aSet : translateSets) {
             int indexChar = aSet.indexOf(p);
-            if (indexChar != -1) { // if in this cycle
-                if (indexChar + 1 == aSet.length()) { // if it is at the end of cycle
+            if (indexChar != -1) {
+                if (indexChar + 1 == aSet.length()) {
                     outChar = aSet.charAt(0);
                 } else {
                     outChar = aSet.charAt(indexChar + 1);
@@ -93,7 +95,7 @@ class Permutation {
                 return outChar;
             }
         }
-        return p; // if not in any cycle
+        return p;
     }
 
     /** Return the result of applying the inverse of this permutation to C. */
@@ -101,8 +103,8 @@ class Permutation {
         char outChar;
         for (String aSet : translateSets) {
             int indexChar = aSet.indexOf(c);
-            if (indexChar != -1) { // if in this cycle
-                if (indexChar == 0) { // if it is at the start of cycle
+            if (indexChar != -1) {
+                if (indexChar == 0) {
                     outChar = aSet.charAt(aSet.length() - 1);
                 } else {
                     outChar = aSet.charAt(indexChar - 1);
@@ -110,7 +112,7 @@ class Permutation {
                 return outChar;
             }
         }
-        return c; // if not in any cycle
+        return c;
     }
 
     /** Return the alphabet used to initialize this Permutation. */
@@ -128,9 +130,20 @@ class Permutation {
         return sum >= _alphabet.size();
     }
 
+    /**
+     * Return translateSets.
+     */
+    ArrayList<String> getTranslateSets() {
+        return translateSets;
+    }
+
     /** Alphabet of this permutation. */
     private Alphabet _alphabet;
 
-    ArrayList<String> translateSets;
+    /** ArrayList that keeps all cycles. */
+    private ArrayList<String> translateSets;
 
+    /** Pattern to search and check for cycles. */
+    private Pattern cyclePattern =
+            Pattern.compile("([(]([^\\*\\(\\)\\s])+[)]\\s*)*");
 }

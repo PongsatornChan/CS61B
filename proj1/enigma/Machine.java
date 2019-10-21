@@ -1,11 +1,12 @@
 package enigma;
 
-import java.util.*;
-
-import static enigma.EnigmaException.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 /** Class that represents a complete enigma machine.
- *  @author
+ *  @author Pongsatorn Chanpanichravee
  */
 class Machine {
 
@@ -18,7 +19,7 @@ class Machine {
         _rotorSlot = new Rotor[numRotors];
         _numPawl = pawls;
         _rotors = new TreeMap<String, Rotor>(String.CASE_INSENSITIVE_ORDER);
-        for ( Rotor rotor : allRotors) {
+        for (Rotor rotor : allRotors) {
             _rotors.put(rotor.name(), rotor);
         }
         _plugboard = new Permutation("", _alphabet);
@@ -51,10 +52,10 @@ class Machine {
      *  numRotors()-1 characters in my alphabet. The first letter refers
      *  to the leftmost rotor setting (not counting the reflector).  */
     void setRotors(String setting) {
-        if (setting.length() != numRotors() - 1 ) {
+        if (setting.length() != numRotors() - 1) {
             throw new EnigmaException("Wrong initial setting");
         }
-        for (int i = 1; i < numRotors(); i++ ) {
+        for (int i = 1; i < numRotors(); i++) {
             char curr = setting.charAt(i - 1);
             if (_alphabet.contains(curr)) {
                 _rotorSlot[i].set(curr);
@@ -85,7 +86,7 @@ class Machine {
         return result;
     }
 
-    /** Advance all the rotor if possible
+    /** Advance all the rotor if possible.
      * @return number of rotors move
      */
     int moveRotors() {
@@ -130,12 +131,16 @@ class Machine {
     /** Common alphabet of my rotors. */
     private final Alphabet _alphabet;
 
-    // FIXME: ADDITIONAL FIELDS HERE, IF NEEDED.
+
+    /** Array that act as slots holder for rotors. */
     private Rotor[] _rotorSlot;
 
+    /** Number of pawl or moving rotors. */
     private final int _numPawl;
 
+    /** Map with names of rotors as key to Rotor value. */
     private final Map<String, Rotor> _rotors;
 
+    /** Permutation that act as plugboard. */
     private Permutation _plugboard;
 }

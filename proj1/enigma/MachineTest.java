@@ -1,14 +1,9 @@
 package enigma;
 import org.junit.Test;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Scanner;
 import java.io.File;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
@@ -19,12 +14,17 @@ import static org.junit.Assert.*;
 
 public class MachineTest {
     Pattern cyclePattern = Pattern.compile("([(][A-Z]+[)] *)*");
-    Pattern rotorPattern = Pattern.compile("([A-Z][a-zA-Z]*) ([MNR][A-Z]*)( *[(][A-Z]+[)])+");
+    Pattern rotorPattern = Pattern.compile(
+            "([A-Z][a-zA-Z]*) ([MNR][A-Z]*)( *[(][A-Z]+[)])+");
     Pattern settingPattern = Pattern.compile(" ([0-9]+) ([0-9]+)");
 
+    /**
+     * Make rotors according to default.conf
+     * put then in ArrayList
+     * @return ArrayList<Rotor> all Rotor from default.conf
+     */
     ArrayList<Rotor> makeRotors() {
         ArrayList<Rotor> allRotors = new ArrayList<Rotor>();
-
         Scanner scanner;
         try {
             scanner = new Scanner(new File("testing/correct/default.conf"));
@@ -32,10 +32,8 @@ public class MachineTest {
             System.out.println("Can't open the default.conf");
             scanner = new Scanner(System.in);
         }
-
         String buffer = scanner.nextLine();
         Alphabet alpha = new Alphabet(buffer);
-
         int numRotor = 0;
         int numPawl = 0;
         buffer = scanner.nextLine();
@@ -48,7 +46,6 @@ public class MachineTest {
         } else {
             throw new EnigmaException("Wrong format: " + buffer);
         }
-
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
             input = input.trim();
@@ -65,7 +62,8 @@ public class MachineTest {
                 }
                 Rotor rotor;
                 if (notches.charAt(0) == 'M') {
-                    rotor = new MovingRotor(nameRotor, perm, notches.substring(1));
+                    rotor = new MovingRotor(nameRotor,
+                            perm, notches.substring(1));
                 } else if (notches.charAt(0) == 'N') {
                     rotor = new Rotor(nameRotor, perm);
                 } else if (notches.charAt(0) == 'R') {
@@ -90,16 +88,19 @@ public class MachineTest {
         ArrayList<Rotor> allRotors;
         try {
             allRotors = makeRotors();
-            Machine enigma = new Machine(allRotors.get(0).alphabet(), 5, 3, allRotors);
+            Machine enigma =
+                    new Machine(allRotors.get(0).alphabet(), 5, 3, allRotors);
             String[] rotorNames = {"B", "Beta", "III", "IV", "I"};
             enigma.insertRotors(rotorNames);
             enigma.setRotors("AXLE");
-            Permutation plugboard = new Permutation("(HQ) (EX) (IP) (TR) (BY)", allRotors.get(0).alphabet());
+            Permutation plugboard = new Permutation("(HQ) (EX) (IP) (TR) (BY)",
+                    allRotors.get(0).alphabet());
             enigma.setPlugboard(plugboard);
 
             assertEquals("QVPQ", enigma.convert("FROM"));
             enigma.setRotors("AXLE");
-            assertEquals("QVPQS OKOIL PUBKJ ZPISF XDW", enigma.convert("FROM HIS SHOULDER HIAWATHA"));
+            assertEquals("QVPQS OKOIL PUBKJ ZPISF XDW",
+                    enigma.convert("FROM HIS SHOULDER HIAWATHA"));
         } catch (EnigmaException e) {
             System.out.println(e.getMessage());
         }

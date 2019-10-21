@@ -19,7 +19,8 @@ class Alphabet {
             if (!list.contains(chars.charAt(i))) {
                 list.add(chars.charAt(i));
             } else {
-                System.out.println("Repeat character " + chars.charAt(i) + " is ignored.");
+                System.out.println("Repeat character "
+                        + chars.charAt(i) + " is ignored.");
             }
         }
     }
@@ -57,5 +58,13 @@ class Alphabet {
         return list.indexOf(ch);
     }
 
-    ArrayList<Character> list;
+    /**
+     * @return ArrayList<Character> list that keep all characters
+     */
+    ArrayList<Character> alphabetList() {
+        return list;
+    }
+
+    /** Array that keep all characters. */
+    private ArrayList<Character> list;
 }

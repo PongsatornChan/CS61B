@@ -17,7 +17,8 @@ public class RotorTest {
     @Test
     public void checkConvertForward() {
         Alphabet a = new Alphabet();
-        Permutation perm = new Permutation("(AELTPHQXRU) (BKNW) (CMOY) (DFG) (IV) (JZ) (S)", a );
+        Permutation perm = new Permutation(
+                "(AELTPHQXRU) (BKNW) (CMOY) (DFG) (IV) (JZ) (S)", a);
         Rotor rotorI = new Rotor("I", perm);
         char output = a.toChar(rotorI.convertForward(0));
         assertEquals('E', output);
@@ -37,7 +38,8 @@ public class RotorTest {
     @Test
     public void checkConvertBackward() {
         Alphabet a = new Alphabet();
-        Permutation perm = new Permutation("(AELTPHQXRU) (BKNW) (CMOY) (DFG) (IV) (JZ) (S)", a );
+        Permutation perm = new Permutation(
+                "(AELTPHQXRU) (BKNW) (CMOY) (DFG) (IV) (JZ) (S)", a);
         Rotor rotorI = new Rotor("I", perm);
 
         rotorI.set('E');

@@ -1,26 +1,18 @@
 package enigma;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
-
 import static enigma.EnigmaException.*;
 
 /** Enigma simulator.
- *  @author
+ *  @author Pongsatorn Chanpanichravee
  */
 public final class Main {
-
-    Pattern alphaPattern = Pattern.compile("\\s*([^\\*\\(\\)\\s])+");
-    Pattern settingPattern = Pattern.compile("\\s*([0-9]+)(\\s*[0-9]+)");
-    Pattern cyclePattern = Pattern.compile("([(]([^\\*\\(\\)\\s])+[)]\\s*)+");
-    Pattern rotorPattern = Pattern.compile("(([^\\*\\(\\)\\s])*)(\\s*[MNR]([^\\*\\(\\)\\s])*)(\\s*[(]([^\\*\\(\\)\\s])+[)])+");
 
     /** Process a sequence of encryptions and decryptions, as
      *  specified by ARGS, where 1 <= ARGS.length <= 3.
@@ -118,13 +110,16 @@ public final class Main {
                 numRotor = Integer.parseInt(strList[0]);
                 numPawl = Integer.parseInt(strList[1]);
                 if (numRotor <= numPawl) {
-                    throw new EnigmaException("Number of rotors must be more than Pawls.");
+                    throw new EnigmaException(
+                            "Number of rotors must be more than Pawls.");
                 }
             } else {
-                throw new EnigmaException("Wrong format for number of Rotors and Pawl");
+                throw new EnigmaException(
+                        "Wrong format for number of Rotors and Pawl");
             }
             ArrayList<Rotor> allRotors = readRotor();
-            Machine enigma = new Machine(_alphabet, numRotor, numPawl, allRotors);
+            Machine enigma = new Machine(
+                    _alphabet, numRotor, numPawl, allRotors);
             return enigma;
         } catch (NoSuchElementException excp) {
             throw error("configuration file truncated");
@@ -147,17 +142,20 @@ public final class Main {
                     if (cyclePattern.matcher(cycles).matches()) {
                         perm = new Permutation(cycles, _alphabet);
                     } else {
-                        throw new EnigmaException("Wrong cycle format: " + cycles);
+                        throw new EnigmaException(
+                                "Wrong cycle format: " + cycles);
                     }
                     Rotor rotor;
                     if (notches.charAt(0) == 'M') {
-                        rotor = new MovingRotor(nameRotor, perm, notches.substring(1));
+                        rotor = new MovingRotor(nameRotor, perm,
+                                notches.substring(1));
                     } else if (notches.charAt(0) == 'N') {
                         rotor = new Rotor(nameRotor, perm);
                     } else if (notches.charAt(0) == 'R') {
                         rotor = new Reflector(nameRotor, perm);
                     } else {
-                        throw new EnigmaException("Wrong notch format: " + notches);
+                        throw new EnigmaException("Wrong notch format: "
+                                + notches);
                     }
                     allRotors.add(rotor);
                 } else {
@@ -215,4 +213,21 @@ public final class Main {
 
     /** File for encoded/decoded messages. */
     private PrintStream _output;
+
+    /** Pattern for searching and matching alphabet and name. */
+    private final Pattern alphaPattern =
+            Pattern.compile("\\s*([^\\*\\(\\)\\s])+");
+
+    /** Pattern for searching and matching number of rotors and pawl. */
+    private final Pattern settingPattern =
+            Pattern.compile("\\s*([0-9]+)(\\s*[0-9]+)");
+
+    /** Pattern for searching and matching cycles of permutation. */
+    private final Pattern cyclePattern =
+            Pattern.compile("([(]([^\\*\\(\\)\\s])+[)]\\s*)+");
+
+    /** Pattern for searching and checking rotors' description. */
+    private final Pattern rotorPattern =
+            Pattern.compile("(([^\\*\\(\\)\\s])*)(\\s*[MNR]"
+                    + "([^\\*\\(\\)\\s])*)(\\s*[(]([^\\*\\(\\)\\s])+[)])+");
 }
