@@ -22,11 +22,19 @@ public class AlphabetTest {
         Alphabet b = new Alphabet("ABCD12");
         assertTrue(b.contains('1'));
         assertFalse(b.contains('F'));
+
+        Alphabet c = new Alphabet("ABCabc/\\{}");
+        assertTrue(c.contains('{'));
+        assertTrue(c.contains('/'));
+        assertTrue(c.contains('\\'));
+
+        exceptionE.expect(EnigmaException.class);
+        c = new Alphabet("asdf(");
     }
 
     @Test
     public void checkToChar() {
-        exceptionE.expect(IndexOutOfBoundsException.class);
+        exceptionE.expect(EnigmaException.class);
         Alphabet a = new Alphabet();
         assertEquals('A', a.toChar(0));
         a.toChar(28);
@@ -34,10 +42,8 @@ public class AlphabetTest {
 
     @Test
     public void checkToInt() {
-        exceptionE.expect(EnigmaException.class);
         Alphabet a = new Alphabet();
         assertEquals(1, a.toInt('B'));
-        a.toInt('b');
-
+        assertEquals(-1, a.toInt('b'));
     }
 }

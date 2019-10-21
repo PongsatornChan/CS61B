@@ -17,10 +17,10 @@ import static enigma.EnigmaException.*;
  */
 public final class Main {
 
-    Pattern alphaPattern = Pattern.compile("[a-zA-Z]+");
-    Pattern cyclePattern = Pattern.compile("([(][A-Z]+[)] *)*");
-    Pattern rotorPattern = Pattern.compile("([A-Z][a-zA-Z]*) ([MNR][A-Z]*)( *[(][A-Z]+[)])+");
-    Pattern settingPattern = Pattern.compile(" ([0-9]+) ([0-9]+)");
+    Pattern alphaPattern = Pattern.compile("\\s*([^\\*\\(\\)\\s])*\\s*");
+    Pattern settingPattern = Pattern.compile("\\s*([0-9]+)(\\s*[0-9]+)");
+    Pattern cyclePattern = Pattern.compile("([(][A-Z]+[)]\\s*)*");
+    Pattern rotorPattern = Pattern.compile("([A-Z][a-zA-Z]*)(\\s*[MNR][A-Z]*)(\\s*[(][A-Z]+[)])+");
 
     /** Process a sequence of encryptions and decryptions, as
      *  specified by ARGS, where 1 <= ARGS.length <= 3.
@@ -102,20 +102,26 @@ public final class Main {
     private Machine readConfig() {
         try {
             Scanner scanner = _config;
-            String buffer = scanner.nextLine();
-            _alphabet = new Alphabet(buffer);
+            String buffer = scanner.findWithinHorizon(alphaPattern, 0);
+            if (buffer != null) {
+                _alphabet = new Alphabet(buffer);
+            } else {
+                throw new EnigmaException("Alphabet is not found.");
+            }
 
             int numRotor = 0;
             int numPawl = 0;
-            buffer = scanner.nextLine();
-            if (settingPattern.matcher(buffer).matches()) {
+            buffer = null;
+            buffer = scanner.findWithinHorizon(settingPattern, 0);
+            if (buffer != null) {
                 String[] strList = buffer.trim().split(" ");
-                if (strList.length == 2) {
-                    numRotor = Integer.parseInt(strList[0]);
-                    numPawl = Integer.parseInt(strList[1]);
+                numRotor = Integer.parseInt(strList[0]);
+                numPawl = Integer.parseInt(strList[1]);
+                if (numRotor <= numPawl) {
+                    throw new EnigmaException("Number of rotors must be more than Pawls.");
                 }
             } else {
-                throw new EnigmaException("Wrong format: " + buffer);
+                throw new EnigmaException("Wrong format for number of Rotors and Pawl");
             }
             ArrayList<Rotor> allRotors = readRotor();
             Machine enigma = new Machine(_alphabet, numRotor, numPawl, allRotors);
@@ -131,7 +137,7 @@ public final class Main {
             Scanner scanner = _config;
             ArrayList<Rotor> allRotors = new ArrayList<Rotor>();
             while (scanner.hasNextLine()) {
-                String input = scanner.nextLine();
+                String input = scanner.findWithinHorizon(rotorPattern, 0);
                 input = input.trim();
                 if (rotorPattern.matcher(input).matches()) {
                     String[] rotorConfig = input.split(" +", 3);

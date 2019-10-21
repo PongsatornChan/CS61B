@@ -42,7 +42,6 @@ class Machine {
             _rotorSlot[i] = _rotors.get(rotors[i]);
             _rotorSlot[i].set(0);
         }
-
     }
 
     /** Set my rotors according to SETTING, which must be a string of

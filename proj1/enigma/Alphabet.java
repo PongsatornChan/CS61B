@@ -12,11 +12,15 @@ class Alphabet {
      *  K (numbering from 0). No character may be duplicated. */
     Alphabet(String chars) {
         list = new ArrayList<>();
-        if (chars.length() < 1) {
+        if (chars.length() < 1 || !chars.matches("([^\\*\\(\\)\\s])*")) {
             throw new EnigmaException("Alphabet: bad argument");
         }
         for (int i = 0; i < chars.length(); i++) {
-            list.add(chars.charAt(i));
+            if (!list.contains(chars.charAt(i))) {
+                list.add(chars.charAt(i));
+            } else {
+                System.out.println("Repeat character " + chars.charAt(i) + " is ignored.");
+            }
         }
     }
 
