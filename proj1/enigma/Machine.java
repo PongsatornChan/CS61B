@@ -42,9 +42,15 @@ class Machine {
         if (!_rotors.get(rotors[0]).reflecting()) {
             throw new EnigmaException("left most rotor must be reflector");
         }
+        boolean startMoving = false;
         for (int i = 0; i < _rotorSlot.length; i++) {
             _rotorSlot[i] = _rotors.get(rotors[i]);
             _rotorSlot[i].set(0);
+            if (_rotorSlot[i].rotates()) {
+                startMoving = true;
+            } else if (startMoving) {
+                throw new EnigmaException("Wrong rotors order.");
+            }
         }
     }
 

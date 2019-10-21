@@ -53,7 +53,7 @@ public class PermutationTest {
         perm = new Permutation("(AB) (C)", new Alphabet("ABCD"));
         checkPerm("identity", "ABCD", "BACD");
 
-        perm.addCycle("D");
+        perm.addCycle("(D)");
         checkPerm("identity", "ABCD", "BACD");
     }
 
