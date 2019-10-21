@@ -38,6 +38,9 @@ class Machine {
      *  available rotors (ROTORS[0] names the reflector).
      *  Initially, all rotors are set at their 0 setting. */
     void insertRotors(String[] rotors) {
+        if (!_rotors.get(rotors[0]).reflecting()) {
+            throw new EnigmaException("left most rotor must be reflector");
+        }
         for (int i = 0; i < _rotorSlot.length; i++) {
             _rotorSlot[i] = _rotors.get(rotors[i]);
             _rotorSlot[i].set(0);
@@ -52,7 +55,12 @@ class Machine {
             throw new EnigmaException("Wrong initial setting");
         }
         for (int i = 1; i < numRotors(); i++ ) {
-            _rotorSlot[i].set(setting.charAt(i - 1));
+            char curr = setting.charAt(i - 1);
+            if (_alphabet.contains(curr)) {
+                _rotorSlot[i].set(curr);
+            } else {
+                throw new EnigmaException("setting must be in Alphabet");
+            }
         }
     }
 

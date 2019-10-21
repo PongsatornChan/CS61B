@@ -17,10 +17,10 @@ import static enigma.EnigmaException.*;
  */
 public final class Main {
 
-    Pattern alphaPattern = Pattern.compile("\\s*([^\\*\\(\\)\\s])*\\s*");
+    Pattern alphaPattern = Pattern.compile("\\s*([^\\*\\(\\)\\s])+");
     Pattern settingPattern = Pattern.compile("\\s*([0-9]+)(\\s*[0-9]+)");
-    Pattern cyclePattern = Pattern.compile("([(][A-Z]+[)]\\s*)*");
-    Pattern rotorPattern = Pattern.compile("([A-Z][a-zA-Z]*)(\\s*[MNR][A-Z]*)(\\s*[(][A-Z]+[)])+");
+    Pattern cyclePattern = Pattern.compile("([(]([^\\*\\(\\)\\s])+[)]\\s*)+");
+    Pattern rotorPattern = Pattern.compile("(([^\\*\\(\\)\\s])*)(\\s*[MNR]([^\\*\\(\\)\\s])*)(\\s*[(]([^\\*\\(\\)\\s])+[)])+");
 
     /** Process a sequence of encryptions and decryptions, as
      *  specified by ARGS, where 1 <= ARGS.length <= 3.
@@ -88,10 +88,10 @@ public final class Main {
 
         while (_input.hasNextLine()) {
             String input = _input.nextLine();
-            if (input.charAt(0) == '*') {
+            if (input.indexOf('*') != -1) {
                 setUp(enigma, input);
             } else {
-                String output = enigma.convert(input.toUpperCase());
+                String output = enigma.convert(input);
                 printMessageLine(output);
             }
         }
@@ -138,9 +138,8 @@ public final class Main {
             ArrayList<Rotor> allRotors = new ArrayList<Rotor>();
             while (scanner.hasNextLine()) {
                 String input = scanner.findWithinHorizon(rotorPattern, 0);
-                input = input.trim();
-                if (rotorPattern.matcher(input).matches()) {
-                    String[] rotorConfig = input.split(" +", 3);
+                if (input != null) {
+                    String[] rotorConfig = input.split("\\s+", 3);
                     String nameRotor = rotorConfig[0];
                     String notches = rotorConfig[1];
                     String cycles = rotorConfig[2];
@@ -161,12 +160,12 @@ public final class Main {
                         throw new EnigmaException("Wrong notch format: " + notches);
                     }
                     allRotors.add(rotor);
-                } else if (cyclePattern.matcher(input).matches()) {
-                    Rotor prevRotor = allRotors.get(allRotors.size() - 1);
-                    Permutation perm = prevRotor.permutation();
-                    perm.addCycle(input);
                 } else {
-                    throw new EnigmaException("Wrong format: " + input);
+                    if (scanner.hasNext()) {
+                        throw new EnigmaException("Wrong format for Rotor");
+                    } else {
+                        break;
+                    }
                 }
             }
             return allRotors;
@@ -178,18 +177,24 @@ public final class Main {
     /** Set M according to the specification given on SETTINGS,
      *  which must have the format specified in the assignment. */
     private void setUp(Machine M, String settings) {
-        String[] strList = settings.split(" +");
+        settings = settings.trim();
+        Scanner scan = new Scanner(settings);
         String[] names = new String[M.numRotors()];
-        for (int i = 1; i <= names.length; i++) {
-            names[i - 1] = strList[i];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = scan.findInLine("([^\\*\\(\\)\\s])+");
+            if (names[i] == null) {
+                throw new EnigmaException("Missing Rotor(s)");
+            }
         }
         M.insertRotors(names);
-        M.setRotors(strList[M.numRotors() + 1]);
+        String initSet = "([^\\*\\(\\)\\s]){" + (M.numRotors() - 1) + "}";
+        M.setRotors(scan.findInLine(initSet));
 
-        strList = settings.split(" [(]", 2);
-        if (strList.length == 2) {
-            strList[1] = "(" + strList[1];
-            M.setPlugboard(new Permutation(strList[1], _alphabet));
+        String plugboard = scan.findInLine(cyclePattern);
+        if (plugboard != null) {
+            M.setPlugboard(new Permutation(plugboard, _alphabet));
+        } else {
+            M.setPlugboard(new Permutation("", _alphabet));
         }
     }
 

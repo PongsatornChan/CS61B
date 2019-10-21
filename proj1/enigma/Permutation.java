@@ -1,6 +1,7 @@
 package enigma;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import static enigma.EnigmaException.*;
@@ -11,7 +12,7 @@ import static enigma.EnigmaException.*;
  */
 class Permutation {
 
-    Pattern cyclePattern = Pattern.compile("[(][a-zA-Z]+[)]");
+    Pattern cyclePattern = Pattern.compile("([(]([^\\*\\(\\)\\s])+[)]\\s*)*");
     /** Set this Permutation to that specified by CYCLES, a string in the
      *  form "(cccc) (cc) ..." where the c's are characters in ALPHABET, which
      *  is interpreted as a permutation in cycle notation.  Characters in the
@@ -20,11 +21,15 @@ class Permutation {
     Permutation(String cycles, Alphabet alphabet) {
         _alphabet = alphabet;
         translateSets = new ArrayList<>();
-        String [] sets = cycles.split("([)] *[(])|( *[(])| |[)]");
-        for (int i = 0; i < sets.length ; i++) {
-            if (sets[i] != "") {
-                translateSets.add(sets[i]);
+        if (cyclePattern.matcher(cycles).matches()) {
+            Scanner scan = new Scanner(cycles);
+            String cycle = scan.findWithinHorizon("([^\\*\\(\\)\\s])+",0);
+            while (cycle != null) {
+                translateSets.add(cycle);
+                cycle = scan.findWithinHorizon("([^\\*\\(\\)\\s])+",0);
             }
+        } else {
+            throw new EnigmaException("Cycle is in wrong format.");
         }
     }
 
