@@ -32,10 +32,12 @@ public class MachineTest {
             System.out.println("Can't open the default.conf");
             scanner = new Scanner(System.in);
         }
+        if (!scanner.hasNext()) {
+            throw new EnigmaException("config is wrong.");
+        }
         String buffer = scanner.nextLine();
         Alphabet alpha = new Alphabet(buffer);
-        int numRotor = 0;
-        int numPawl = 0;
+        int numRotor = 0; int numPawl = 0;
         buffer = scanner.nextLine();
         if (settingPattern.matcher(buffer).matches()) {
             String[] strList = buffer.trim().split(" ");
@@ -53,8 +55,7 @@ public class MachineTest {
                 String[] rotorConfig = input.split(" +", 3);
                 String nameRotor = rotorConfig[0];
                 String notches = rotorConfig[1];
-                String cycles = rotorConfig[2];
-                Permutation perm;
+                String cycles = rotorConfig[2]; Permutation perm;
                 if (cyclePattern.matcher(cycles).matches()) {
                     perm = new Permutation(cycles, alpha);
                 } else {

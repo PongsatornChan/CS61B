@@ -77,11 +77,18 @@ public final class Main {
      *  results to _output. */
     private void process() {
         Machine enigma = readConfig();
+        if (!_input.hasNext()) {
+            throw new EnigmaException("Input file is empty.");
+        }
 
+        boolean hasSetting = false;
         while (_input.hasNextLine()) {
             String input = _input.nextLine();
             if (input.indexOf('*') != -1) {
+                hasSetting = true;
                 setUp(enigma, input);
+            } else if (!hasSetting) {
+                throw new EnigmaException("message without setting.");
             } else {
                 String output = enigma.convert(input);
                 printMessageLine(output);
@@ -178,6 +185,7 @@ public final class Main {
         settings = settings.trim();
         Scanner scan = new Scanner(settings);
         String[] names = new String[M.numRotors()];
+
         for (int i = 0; i < names.length; i++) {
             names[i] = scan.findInLine("([^\\*\\(\\)\\s])+");
             if (names[i] == null) {

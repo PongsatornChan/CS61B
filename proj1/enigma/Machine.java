@@ -42,15 +42,30 @@ class Machine {
         if (!_rotors.get(rotors[0]).reflecting()) {
             throw new EnigmaException("left most rotor must be reflector");
         }
+        for (int i = 0; i < rotors.length; i++) {
+            for (int j = i + 1; j < rotors.length; j++) {
+                if (rotors[i].equalsIgnoreCase(rotors[j])) {
+                    throw new EnigmaException("Duplicated Rotor");
+                }
+            }
+        }
+        int numMoving = 0;
         boolean startMoving = false;
         for (int i = 0; i < _rotorSlot.length; i++) {
+            if (!_rotors.containsKey(rotors[i])) {
+                throw new EnigmaException("Bad rotor name");
+            }
             _rotorSlot[i] = _rotors.get(rotors[i]);
             _rotorSlot[i].set(0);
             if (_rotorSlot[i].rotates()) {
                 startMoving = true;
+                numMoving++;
             } else if (startMoving) {
                 throw new EnigmaException("Wrong rotors order.");
             }
+        }
+        if (numMoving != numPawls()) {
+            throw new EnigmaException("Wrong number of moving rotors.");
         }
     }
 

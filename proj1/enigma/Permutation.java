@@ -33,10 +33,17 @@ class Permutation {
     }
 
     /** reuse as a function to handle multiple line input
-     *  CYCLES is in form "(cccc) (cc) ...".
+     *  CYCLES is in form "(cccc) (cc) ..." or "ccccc cc ..".
      */
     void addCycle(String cycles) {
         if (cyclePattern.matcher(cycles).matches()) {
+            Scanner scan = new Scanner(cycles);
+            String cycle = scan.findWithinHorizon("([^\\*\\(\\)\\s])+", 0);
+            while (cycle != null) {
+                translateSets.add(cycle);
+                cycle = scan.findWithinHorizon("([^\\*\\(\\)\\s])+", 0);
+            }
+        } else if (cycles.matches("(([^\\*\\(\\)\\s]+)\\s)+")) {
             Scanner scan = new Scanner(cycles);
             String cycle = scan.findWithinHorizon("([^\\*\\(\\)\\s])+", 0);
             while (cycle != null) {
