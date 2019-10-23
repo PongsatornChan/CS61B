@@ -51,12 +51,14 @@ public class CompactLinkedList<T> extends AbstractSequentialList<T> {
             if (k < _size - k) {
                 _prev = -1;
                 _next = _first;
+                _nextIndex = 0;
                 for (int i = 0; i < k; i += 1) {
                     next();
                 }
             } else {
                 _prev = _last;
                 _next = -1;
+                _nextIndex = _size - 1;
                 for (int i = _size; i > k; i -= 1) {
                     previous();
                 }
@@ -70,7 +72,15 @@ public class CompactLinkedList<T> extends AbstractSequentialList<T> {
 
         @Override
         public T next() {
-            return null; // REPLACE WITH SOLUTION
+            if (_next == -1) {
+                throw new IllegalStateException("No next");
+            }
+            T result = _data[_next];
+            int temp = _next;
+            _next = _link[_next] ^ _prev;
+            _prev = temp;
+            _nextIndex++;
+            return result; // REPLACE WITH SOLUTION
         }
 
         @Override
@@ -85,7 +95,15 @@ public class CompactLinkedList<T> extends AbstractSequentialList<T> {
 
         @Override
         public T previous() {
-            return null; // REPLACE WITH SOLUTION
+            if (_prev == -1) {
+                throw new IllegalStateException("No prev");
+            }
+            T result = _data[_prev];
+            int temp = _prev;
+            _prev = _link[_prev] ^ _next;
+            _next = temp;
+            _nextIndex--;
+            return result; // REPLACE WITH SOLUTION
         }
 
         @Override
@@ -107,6 +125,25 @@ public class CompactLinkedList<T> extends AbstractSequentialList<T> {
              * no longer in use (for example, that were being used, but were
              * then removed).  For this exercise, you needn't bother. */
             // FILL IN
+            if (_size >= _data.length) {
+                throw new IllegalStateException("the list is full.");
+            }
+            _data[_size] = obj;
+            _link[_size] = _next ^ _prev;
+            if (_next == -1) {
+                _next = _size;
+                if (_prev != -1) {
+                    _link[_prev] = _link[_prev] ^ _next ^ _size;
+                }
+            } else if (_prev == -1) {
+                _link[_next] = _link[_next] ^ _prev ^ _size;
+            } else {
+                _link[_next] = _link[_next] ^ _prev ^ _size;
+                _link[_prev] = _link[_prev] ^ _next ^ _size;
+                _next = _size;
+            }
+            _size++;
+
         }
 
 

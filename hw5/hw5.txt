@@ -3,25 +3,35 @@ HW #5.
 
 Question D.
 
-1.
+1. O(x^2)
+The largest term is x^2
 
+2. O(log N)
+5log N = log N^5 > log (4N^3 + 2x^2)
 
-2.
+3. O(N)
+N + (N-1) + (N-2) + ... + 1 + 0 = cN + k
 
+4. Theta(MN)
+Each loop of i, loop M time.
+Worst case: bump() never never return true => M*N
 
-3.
+5. Theta(n * log n)
+O() of f1 is O(n)
+Each f5 run n and branches out to two, created a tree depth log n
+Each level of this tree run n, so n * log n
 
+6. If b > 10, log_b f(x) < log_10 f(x), f(x) > 0
+Let K > log_b 10 for b < 10, and M s.t. f(x) > 0 for any x > M
+Hence, log_b f(x) <  K * log_10 f(x)
 
-4.
+7. Let K = degree of p(x)
+O(log x) = K log x = log x^K
+log p(x) ∈ log x^K
 
-
-5.
-
-
-6.
-
-
-7.
-
-
-8.
+8. ⌈f(n)⌉ ∈ O(f(n))
+f(n) > 1: ⌈f(n)⌉ >= f(n) >= ⌈f(n)⌉ - 1
+Let M be integer s.t. f(n) >= 1 for any n > M
+since f(n) is increasing M that satisfy above exists
+Let K = 2, 2f(n) > ⌈f(n)⌉ >= f(n) for any n > M that make f(n) > 1
+Hence, ⌈f(n)⌉ ∈ O(f(n))
