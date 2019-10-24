@@ -128,20 +128,20 @@ public class CompactLinkedList<T> extends AbstractSequentialList<T> {
             if (_size >= _data.length) {
                 throw new IllegalStateException("the list is full.");
             }
+            if (_first == -1) {
+                _first = _size;
+            }
             _data[_size] = obj;
             _link[_size] = _next ^ _prev;
-            if (_next == -1) {
-                _next = _size;
-                if (_prev != -1) {
-                    _link[_prev] = _link[_prev] ^ _next ^ _size;
-                }
-            } else if (_prev == -1) {
-                _link[_next] = _link[_next] ^ _prev ^ _size;
-            } else {
-                _link[_next] = _link[_next] ^ _prev ^ _size;
-                _link[_prev] = _link[_prev] ^ _next ^ _size;
-                _next = _size;
+
+            if (_next != -1) {
+                _link[_next] = (_link[_next] ^ _prev) ^ _size;
             }
+            if (_prev != -1) {
+                _link[_prev] = _link[_prev] ^ _next ^ _size;
+            }
+            _prev = _size;
+            _last = _size;
             _size++;
 
         }
