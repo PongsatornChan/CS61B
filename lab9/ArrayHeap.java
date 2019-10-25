@@ -119,66 +119,110 @@ public class ArrayHeap<T> {
 
     /* Returns the index of the left child of the node at i. */
     private int getLeftOf(int i) {
-        //TODO
-        return 0;
+        return 2 * i;
     }
 
     /* Returns the index of the right child of the node at i. */
     private int getRightOf(int i) {
-        //TODO
-        return 0;
+        return (2 * i) + 1;
     }
 
     /* Returns the index of the node that is the parent of the node at i. */
     private int getParentOf(int i) {
-        //TODO
-        return 0;
+        if (i % 2 == 1) {
+            return (i - 1) / 2;
+        } else {
+            return i / 2;
+        }
     }
 
     /* Adds the given node as a left child of the node at the given index. */
     private void setLeft(int index, Node n) {
-        //TODO
+        assert index != 0;
+        int indexLeft = getLeftOf(index);
+        setNode(indexLeft, n);
     }
 
     /* Adds the given node as the right child of the node at the given index. */
     private void setRight(int index, Node n) {
-        //TODO
+        assert index != 0;
+        int indexRight = getRightOf(index);
+        setNode(indexRight, n);
     }
 
     /** Returns the index of the node with smaller priority. Precondition: not
       * both nodes are null. */
     private int min(int index1, int index2) {
-        //TODO
-        return 0;
+        Node n1 = getNode(index1);
+        Node n2 = getNode(index2);
+
+        if (n1 == null && n2 == null) {
+            return -1;
+        } else if (n1 == null) {
+            return index2;
+        } else if (n2 == null) {
+            return index1;
+        } else {
+            if (n1.priority() - n2.priority() >= 0) {
+                return index2;
+            } else {
+                return index1;
+            }
+        }
     }
 
     /* Returns the Node with the smallest priority value, but does not remove it
      * from the heap. */
     public Node peek() {
-        //TODO
-        return null;
+        return getNode(1);
     }
 
     /* Bubbles up the node currently at the given index. */
     private void bubbleUp(int index) {
-        //TODO
+        assert index != 0;
+        if (index > 1) {
+            int indexP = getParentOf(index);
+            if (min(indexP, index) == index) {
+                swap(indexP, index);
+                bubbleUp(indexP);
+            }
+        }
     }
 
     /* Bubbles down the node currently at the given index. */
     private void bubbleDown(int index) {
-        //TODO
+        assert index != 0;
+        int indexL = getLeftOf(index);
+        int indexR = getRightOf(index);
+        int indexSmallest = min(indexL, indexR);
+        if (indexSmallest != -1) {
+            if (min(indexSmallest, index) == indexSmallest) {
+                swap(indexSmallest, index);
+                bubbleDown(indexSmallest);
+            }
+        }
     }
 
     /* Inserts an item with the given priority value. Same as enqueue, or offer. */
     public void insert(T item, double priority) {
         //TODO
+        int thisIndex = size() + 1;
+        setNode(thisIndex, new Node(item, priority));
+        bubbleUp(thisIndex);
     }
 
     /* Returns the element with the smallest priority value, and removes it from
      * the heap. Same as dequeue, or poll. */
     public T removeMin() {
         //TODO
-        return null;
+        T result = removeNode(1).item;
+        if (size() == 0) {
+            return result;
+        }
+        setNode(1, removeNode(size()));
+        int thisIndex = 1;
+        bubbleDown(thisIndex);
+        return result;
     }
 
     /* Changes the node in this heap with the given item to have the given
@@ -186,6 +230,16 @@ public class ArrayHeap<T> {
      * item. Check for item equality with .equals(), not == */
     public void changePriority(T item, double priority) {
         //TODO
+        int indexC = 0;
+        for (int i = 1; i <= size(); i++) {
+            if (getNode(i).item().equals(item)) {
+                getNode(i).setPriority(priority);
+                indexC = i;
+                break;
+            }
+        }
+        bubbleUp(indexC);
+        bubbleDown(indexC);
     }
 
 }
