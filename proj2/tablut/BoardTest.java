@@ -51,4 +51,21 @@ public class BoardTest {
         System.out.println(myBoard.toString());
         System.out.println(myBoard.legalMoves(Piece.WHITE));
     }
+
+    @Test
+    public void makeMoveTest() {
+        Board myBoard = new Board();
+        myBoard.init();
+        myBoard.makeMove(Square.sq("d1"), Square.sq("d3"));
+        try{
+            myBoard.makeMove(Square.sq("a4"), Square.sq("c4"));
+        } catch (AssertionError e) {
+            System.out.println(myBoard);
+        }
+//        myBoard.makeMove(Square.sq("c5"), Square.sq("c3"));
+//        System.out.println(myBoard);
+
+        myBoard.makeMove(Square.sq("d5"), Square.sq("d8"));
+        System.out.println(myBoard);
+    }
 }
