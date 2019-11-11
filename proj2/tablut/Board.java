@@ -1,16 +1,15 @@
 package tablut;
 
-import java.util.Formatter;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
+import static tablut.Move.ROOK_MOVES;
 import static tablut.Piece.*;
 import static tablut.Square.*;
 import static tablut.Move.mv;
 
 
 /** The state of a Tablut Game.
- *  @author
+ *  @author Pongsatorn Chanpanichravee
  */
 class Board {
 
@@ -55,17 +54,42 @@ class Board {
             return;
         }
         init();
-        // FIXME
+
+        kingLocation = model.kingPosition();
+        pieceMap.clear();
+        clearUndo();
+
+        _turn = model.turn();
+        _moveCount = model.moveCount();
+        _maxMove = model.getMaxMove();
+        pieceMap.putAll(model.getPieceMap());
+        prevBoard = model.getPrevBoard();
     }
 
     /** Clears the board to the initial position. */
     void init() {
-        // FIXME
+
+        _moveCount = 0;
+        _maxMove = Integer.MAX_VALUE;
+        _turn = BLACK;
+        _repeated = false;
+        pieceMap = new HashMap<Square, Piece>();
+        prevBoard = null;
+        for (Square s : SQUARE_LIST) {
+            put(EMPTY, s);
+        }
+        for (int i = 0; i < INITIAL_ATTACKERS.length; i++) {
+            put(BLACK, INITIAL_ATTACKERS[i]);
+        }
+        for (int i = 0; i < INITIAL_DEFENDERS.length; i++) {
+            put(WHITE, INITIAL_DEFENDERS[i]);
+        }
+        put(KING, THRONE);
     }
 
     /** Set the move limit to LIM.  It is an error if 2*LIM <= moveCount(). */
     void setMoveLimit(int n) {
-        // FIXME
+        _maxMove = n;
     }
 
     /** Return a Piece representing whose move it is (WHITE or BLACK). */
@@ -88,6 +112,7 @@ class Board {
      *  position is a repeat. */
     private void checkRepeated() {
         // FIXME
+
     }
 
     /** Return the number of moves since the initial position that have not been
@@ -98,7 +123,7 @@ class Board {
 
     /** Return location of the king. */
     Square kingPosition() {
-        return null; // FIXME
+        return kingLocation;
     }
 
     /** Return the contents the square at S. */
@@ -109,7 +134,7 @@ class Board {
     /** Return the contents of the square at (COL, ROW), where
      *  0 <= COL, ROW <= 9. */
     final Piece get(int col, int row) {
-        return null; // FIXME
+        return pieceMap.get(sq(col, row));
     }
 
     /** Return the contents of the square at COL ROW. */
@@ -119,12 +144,33 @@ class Board {
 
     /** Set square S to P. */
     final void put(Piece p, Square s) {
-        // FIXME
+        assert get(s) == EMPTY || get(s) == null;
+        pieceMap.put(s, p);
+        if (p == KING) {
+            kingLocation = s;
+        }
     }
 
     /** Set square S to P and record for undoing. */
     final void revPut(Piece p, Square s) {
-        // FIXME
+        assert get(s) == EMPTY || get(s) == null;
+        pieceMap.put(s, p);
+
+        Board prev = new Board();
+        prev.copy(this);
+        prevBoard = prev;
+    }
+
+    /** Change of logic: record before set S to P
+     * should be use at the start of each turn
+     * to record prevBoard before changing it */
+    final void recPut(Piece p, Square s) {
+        assert get(s) == EMPTY || get(s) == null;
+        Board prev = new Board();
+        prev.copy(this);
+        prevBoard = prev;
+
+        pieceMap.put(s, p);
     }
 
     /** Set square COL ROW to P. */
@@ -136,7 +182,16 @@ class Board {
      *  board.  For this to be true, FROM-TO must be a rook move and the
      *  squares along it, other than FROM, must be empty. */
     boolean isUnblockedMove(Square from, Square to) {
-        return false; // FIXME
+        assert from.isRookMove(to);
+        int dir = from.direction(to);
+        Square curr = from.rookMove(dir, 1);
+        for (int i = 2; curr != to; i++) {
+            if (pieceMap.get(curr) != EMPTY) {
+                return false;
+            }
+            curr = from.rookMove(dir, i);
+        }
+        return pieceMap.get(curr) == EMPTY;
     }
 
     /** Return true iff FROM is a valid starting square for a move. */
@@ -146,7 +201,11 @@ class Board {
 
     /** Return true iff FROM-TO is a valid move. */
     boolean isLegal(Square from, Square to) {
-        return false; // FIXME
+        // FIXME
+        if (get(from) == KING) {
+            return isUnblockedMove(from, to);
+        }
+        return to != THRONE && isUnblockedMove(from, to);
     }
 
     /** Return true iff MOVE is a legal move in the current
@@ -191,17 +250,31 @@ class Board {
      *  current position or win status. */
     void clearUndo() {
         // FIXME
+        prevBoard = null;
     }
 
     /** Return a new mutable list of all legal moves on the current board for
      *  SIDE (ignoring whose turn it is at the moment). */
     List<Move> legalMoves(Piece side) {
-        return null;  // FIXME
+        ArrayList<Move> MoveList = new ArrayList<Move>(); // FIXME
+        HashSet<Square> locations = pieceLocations(side);
+        for (Square s : locations) {
+            for (int i = 0; i < 4; i++) {
+                ArrayList<Move> temp = ROOK_MOVES[s.index()][i];
+                for (Move m : temp) {
+                    if (isLegal(m)) {
+                        MoveList.add(m);
+                    }
+                }
+            }
+
+        }
+        return MoveList;
     }
 
     /** Return true iff SIDE has a legal move. */
     boolean hasMove(Piece side) {
-        return false; // FIXME
+        return !legalMoves(side).isEmpty();
     }
 
     @Override
@@ -238,7 +311,16 @@ class Board {
     /** Return the locations of all pieces on SIDE. */
     private HashSet<Square> pieceLocations(Piece side) {
         assert side != EMPTY;
-        return null; // FIXME
+        HashSet<Square> locations = new HashSet<Square>();
+        for (Square s : SQUARE_LIST) {
+            if (get(s) == side) {
+                locations.add(s);
+            }
+        }
+        if (side == WHITE) {
+            locations.add(kingPosition());
+        }
+        return locations;
     }
 
     /** Return the contents of _board in the order of SQUARE_LIST as a sequence
@@ -252,6 +334,18 @@ class Board {
         return new String(result);
     }
 
+    public HashMap<Square, Piece> getPieceMap() {
+        return pieceMap;
+    }
+
+    public Board getPrevBoard() {
+        return prevBoard;
+    }
+
+    public int getMaxMove() {
+        return _maxMove;
+    }
+
     /** Piece whose turn it is (WHITE or BLACK). */
     private Piece _turn;
     /** Cached value of winner on this board, or EMPTY if it has not been
@@ -263,5 +357,12 @@ class Board {
     private boolean _repeated;
 
     // FIXME: Other state?
+    private Square kingLocation;
+
+    private int _maxMove;
+
+    private HashMap<Square, Piece> pieceMap;
+
+    private Board prevBoard;
 
 }
