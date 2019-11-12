@@ -68,4 +68,16 @@ public class BoardTest {
         myBoard.makeMove(Square.sq("d5"), Square.sq("d8"));
         System.out.println(myBoard);
     }
+
+    @Test
+    public void undoTest() {
+        Board myBoard = new Board();
+        myBoard.init();
+        System.out.println(myBoard.encodedBoard());
+        myBoard.makeMove(Square.sq("d1"), Square.sq("d3"));
+        System.out.println(myBoard);
+        myBoard.undo();
+        System.out.println(myBoard);
+
+    }
 }

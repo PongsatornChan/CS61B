@@ -74,7 +74,7 @@ class Board {
         _turn = BLACK;
         _repeated = false;
         pieceMap = new HashMap<Square, Piece>();
-        prevBoard = new ArrayList<Board>();
+        prevBoard = new ArrayList<String>();
         for (Square s : SQUARE_LIST) {
             put(EMPTY, s);
         }
@@ -84,7 +84,7 @@ class Board {
         for (int i = 0; i < INITIAL_DEFENDERS.length; i++) {
             put(WHITE, INITIAL_DEFENDERS[i]);
         }
-        put(KING, THRONE);
+        revPut(KING, THRONE);
     }
 
     /** Set the move limit to LIM.  It is an error if 2*LIM <= moveCount(). */
@@ -111,7 +111,13 @@ class Board {
     /** Record current position and set winner() next mover if the current
      *  position is a repeat. */
     private void checkRepeated() {
-        // FIXME
+
+        if (prevBoard.contains(encodedBoard())) {
+            _repeated = true;
+            _winner = turn().opponent();
+        }
+        prevBoard.add(encodedBoard());
+
     }
 
     /** Return the number of moves since the initial position that have not been
@@ -151,11 +157,9 @@ class Board {
 
     /** Set square S to P and record for undoing. */
     final void revPut(Piece p, Square s) {
-        pieceMap.put(s, p);
+        put(p, s);
 
-        Board curr = new Board();
-        curr.copy(this);
-        prevBoard.add(curr);
+        checkRepeated();
     }
 
     /** Set square COL ROW to P. */
@@ -275,22 +279,40 @@ class Board {
     void undo() {
         if (_moveCount > 0) {
             undoPosition();
-            // FIXME
+            _repeated = false;
+            _winner = null;
+            _moveCount--;
+            _turn = turn().opponent();
+            String prevStr = prevBoard.get(prevBoard.size() - 1);
+            assert _turn.toString().charAt(0) == prevStr.charAt(0);
+            for (int i = 0; i < NUM_SQUARES; i++) {
+                if (prevStr.charAt(i + 1) == 'W')
+                    pieceMap.put(SQUARE_LIST.get(i), WHITE);
+                else if (prevStr.charAt(i + 1) == 'B')
+                    pieceMap.put(SQUARE_LIST.get(i), BLACK);
+                else if (prevStr.charAt(i + 1) == 'K')
+                    pieceMap.put(SQUARE_LIST.get(i), KING);
+                else
+                    pieceMap.put(SQUARE_LIST.get(i), EMPTY);
+            }
         }
     }
 
     /** Remove record of current position in the set of positions encountered,
      *  unless it is a repeated position or we are at the first move. */
     private void undoPosition() {
-        // FIXME
-        _repeated = false;
+
+        if (_moveCount > 0) {
+            prevBoard.remove(prevBoard.size() - 1);
+            pieceMap.clear();
+        }
     }
 
     /** Clear the undo stack and board-position counts. Does not modify the
      *  current position or win status. */
     void clearUndo() {
-        // FIXME
-        prevBoard = null;
+
+        prevBoard.clear();
     }
 
     /** Return a new mutable list of all legal moves on the current board for
@@ -381,7 +403,7 @@ class Board {
         return pieceMap;
     }
 
-    public ArrayList<Board> getPrevBoard() {
+    public ArrayList<String> getPrevBoard() {
         return prevBoard;
     }
 
@@ -399,13 +421,13 @@ class Board {
     /** True when current board is a repeated position (ending the game). */
     private boolean _repeated;
 
-    // FIXME: Other state?
+
     private Square kingLocation;
 
     private int _maxMove;
 
     private HashMap<Square, Piece> pieceMap;
 
-    private ArrayList<Board> prevBoard;
+    private ArrayList<String> prevBoard;
 
 }
