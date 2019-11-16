@@ -1,9 +1,15 @@
 package tablut;
 
+import java.sql.Blob;
 import java.util.List;
 
 import static java.lang.Math.*;
 
+import static tablut.Board.WTHRONE;
+import static tablut.Board.STHRONE;
+import static tablut.Board.ETHRONE;
+import static tablut.Board.NTHRONE;
+import static tablut.Square.SQUARE_LIST;
 import static tablut.Square.sq;
 import static tablut.Board.THRONE;
 import static tablut.Piece.*;
@@ -77,7 +83,7 @@ class AI extends Player {
     private int findMove(Board board, int depth, boolean saveMove,
                          int sense, int alpha, int beta) {
         // FIXME
-        if (depth == 0) {
+        if (depth == 0 || board.winner() != null) {
             return staticScore(board);
         } else {
             int bestSoFar = -1 * sense * INFTY;
@@ -136,20 +142,67 @@ class AI extends Player {
             return -1 * WINNING_VALUE;
         } else {
             int sum = 0;
-
+            sum += kingCondition(board);
+            for (Square s : SQUARE_LIST) {
+                if (board.get(s) == BLACK) {
+                    sum -= _blackValue;
+                } else if (board.get(s) == WHITE) {
+                    sum += _whiteValue;
+                }
+            }
+            return sum;
         }
-        return 0;
     }
 
     // FIXME: More here.
 
     private int kingCondition(Board board) {
         int sum = 0;
-        if (board.kingPosition() == THRONE) {
-
+        Square king = board.kingPosition();
+        if (king == THRONE ||
+                king == NTHRONE ||
+                king == ETHRONE ||
+                king == STHRONE ||
+                king == WTHRONE) {
+            sum += _safeBonus;
+            for (int i = 0; i < 4; i++) {
+                List<Square> rookMoves = Square.ROOK_SQUARES[king.index()][i];
+                for (Square s : rookMoves) {
+                    if (board.get(s) == WHITE) {
+                        sum += 5;
+                    } else if (board.get(s) == BLACK) {
+                        sum -= 5;
+                    }
+                }
+            }
+        } else {
+            int edges = 0;
+            for (int i = 0; i < 4; i++) {
+                List<Square> rookMoves = Square.ROOK_SQUARES[king.index()][i];
+                for (Square s : rookMoves) {
+                    if (board.get(s) == WHITE) {
+                        sum += 5;
+                        break;
+                    } else if (board.get(s) == BLACK) {
+                        sum -= 20;
+                        break;
+                    } else if (s.isEdge()) {
+                        edges++;
+                    }
+                }
+            }
+            if (edges > 1) {
+                sum += 10000;
+            }
         }
-        return 0;
+        return sum;
     }
 
     private static int _maxDepth = 4;
+
+    private final int _safeBonus = 10;
+
+    private final int _blackValue = 10;
+
+    private final int _whiteValue = 20;
 }

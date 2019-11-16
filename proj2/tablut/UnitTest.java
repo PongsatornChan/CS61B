@@ -20,9 +20,6 @@ public class UnitTest {
     public void AITest() {
         Board b = new Board();
         b.init();
-
-        //Controller cont = new Controller();
-
         Move bestMove;
     }
 

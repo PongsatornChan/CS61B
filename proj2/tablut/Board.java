@@ -55,10 +55,12 @@ class Board {
         }
         init();
 
-        kingLocation = model.kingPosition();
         pieceMap.clear();
         clearUndo();
 
+        kingLocation = model.kingPosition();
+        _winner = model.winner();
+        _repeated = model.repeatedPosition();
         _turn = model.turn();
         _moveCount = model.moveCount();
         _maxMove = model.getMaxMove();
@@ -73,6 +75,7 @@ class Board {
         _maxMove = Integer.MAX_VALUE;
         _turn = BLACK;
         _repeated = false;
+        _winner = null;
         pieceMap = new HashMap<Square, Piece>();
         prevBoard = new ArrayList<String>();
         kingLocation = null;
@@ -129,6 +132,16 @@ class Board {
 
     /** Return location of the king. */
     Square kingPosition() {
+        for (Square s : SQUARE_LIST) {
+            if (get(s) == KING) {
+                if (s != kingLocation) {
+                    System.out.println("kingLocation is wrong." + kingLocation);
+                    kingLocation = s;
+                }
+                return s;
+            }
+        }
+        System.out.println("Cannot find KING");
         return kingLocation;
     }
 
@@ -294,17 +307,18 @@ class Board {
             _winner = null;
             _moveCount--;
             _turn = turn().opponent();
+            kingLocation = null;
             String prevStr = prevBoard.get(prevBoard.size() - 1);
             assert _turn.toString().charAt(0) == prevStr.charAt(0);
             for (int i = 0; i < NUM_SQUARES; i++) {
                 if (prevStr.charAt(i + 1) == 'W')
-                    pieceMap.put(SQUARE_LIST.get(i), WHITE);
+                    put(WHITE, SQUARE_LIST.get(i));
                 else if (prevStr.charAt(i + 1) == 'B')
-                    pieceMap.put(SQUARE_LIST.get(i), BLACK);
+                    put(BLACK, SQUARE_LIST.get(i));
                 else if (prevStr.charAt(i + 1) == 'K')
-                    pieceMap.put(SQUARE_LIST.get(i), KING);
+                    put(KING, SQUARE_LIST.get(i));
                 else
-                    pieceMap.put(SQUARE_LIST.get(i), EMPTY);
+                    put(EMPTY, SQUARE_LIST.get(i));
             }
         }
     }
@@ -313,7 +327,7 @@ class Board {
      *  unless it is a repeated position or we are at the first move. */
     private void undoPosition() {
 
-        if (_moveCount > 1) {
+        if (_moveCount > 0) {
             prevBoard.remove(prevBoard.size() - 1);
             pieceMap.clear();
         }
