@@ -136,7 +136,7 @@ class AI extends Player {
             return -1 * WINNING_VALUE;
         } else {
             int sum = 0;
-            board.
+
         }
         return 0;
     }
