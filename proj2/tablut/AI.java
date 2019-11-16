@@ -40,8 +40,9 @@ class AI extends Player {
 
     @Override
     String myMove() {
-        return findMove().toString(); // FIXME
-
+        Move aiMove = findMove(); // FIXME
+        _controller.reportMove(aiMove);
+        return aiMove.toString();
     }
 
     @Override
@@ -56,9 +57,9 @@ class AI extends Player {
         _lastFoundMove = null;
         // FIXME
         if (myPiece() == WHITE) {
-            findMove(b, 4, true, 1, -1 * INFTY, INFTY);
+            findMove(b, 4, true, 1, -1 * WILL_WIN_VALUE, WILL_WIN_VALUE);
         } else {
-            findMove(b, 4, true, -1, -1 * INFTY, INFTY);
+            findMove(b, 4, true, -1, -1 * WILL_WIN_VALUE, WILL_WIN_VALUE);
         }
         return _lastFoundMove;
     }
@@ -133,16 +134,20 @@ class AI extends Player {
             return WINNING_VALUE;
         } else if (board.winner() == BLACK) {
             return -1 * WINNING_VALUE;
-        } else if (willWin(board) != 0) {
-            return willWin(board) * WILL_WIN_VALUE;
+        } else {
+            int sum = 0;
+            board.
         }
         return 0;
     }
 
     // FIXME: More here.
 
-    private int willWin(Board board) {
-        List<Move> moveLst = board.legalMoves(WHITE);
+    private int kingCondition(Board board) {
+        int sum = 0;
+        if (board.kingPosition() == THRONE) {
+
+        }
         return 0;
     }
 

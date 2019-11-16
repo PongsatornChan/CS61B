@@ -75,6 +75,7 @@ class Board {
         _repeated = false;
         pieceMap = new HashMap<Square, Piece>();
         prevBoard = new ArrayList<String>();
+        kingLocation = null;
         for (Square s : SQUARE_LIST) {
             put(EMPTY, s);
         }
@@ -231,7 +232,7 @@ class Board {
     /** Move FROM-TO, assuming this is a legal move. */
     void makeMove(Square from, Square to) {
         if (!isLegal(from, to)) {
-            System.out.println("Illegal move!");
+            //System.out.println("Illegal move!");
             return;
         }
         _moveCount++;
@@ -333,6 +334,10 @@ class Board {
         Piece currSide = _turn;
         _turn = side;
         for (Square s : locations) {
+            if (s == null) {
+                System.out.println("s is null!!");
+                System.out.println(locations.size());
+            }
             for (int i = 0; i < 4; i++) {
                 ArrayList<Move> temp = ROOK_MOVES[s.index()][i];
                 for (Move m : temp) {
@@ -393,7 +398,9 @@ class Board {
             }
         }
         if (side == WHITE) {
-            locations.add(kingPosition());
+            if (kingPosition() != null) {
+                locations.add(kingPosition());
+            }
         }
         return locations;
     }
