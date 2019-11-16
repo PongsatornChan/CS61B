@@ -1,5 +1,7 @@
 package tablut;
 
+import java.util.List;
+
 import static java.lang.Math.*;
 
 import static tablut.Square.sq;
@@ -7,7 +9,7 @@ import static tablut.Board.THRONE;
 import static tablut.Piece.*;
 
 /** A Player that automatically generates moves.
- *  @author
+ *  @author Pongsatorn Chanpanichravee
  */
 class AI extends Player {
 
@@ -38,7 +40,8 @@ class AI extends Player {
 
     @Override
     String myMove() {
-        return ""; // FIXME
+        return findMove().toString(); // FIXME
+
     }
 
     @Override
@@ -52,6 +55,11 @@ class AI extends Player {
         Board b = new Board(board());
         _lastFoundMove = null;
         // FIXME
+        if (myPiece() == WHITE) {
+            findMove(b, 4, true, 1, -1 * INFTY, INFTY);
+        } else {
+            findMove(b, 4, true, -1, -1 * INFTY, INFTY);
+        }
         return _lastFoundMove;
     }
 
@@ -67,20 +75,76 @@ class AI extends Player {
      *  of the board value and does not set _lastMoveFound. */
     private int findMove(Board board, int depth, boolean saveMove,
                          int sense, int alpha, int beta) {
-        return 0; // FIXME
+        // FIXME
+        if (depth == 0) {
+            return staticScore(board);
+        } else {
+            int bestSoFar = -1 * sense * INFTY;
+            if (sense == 1) {
+                for (Move m : board.legalMoves(board.turn())) {
+                    board.makeMove(m);
+                    int score = findMove(board, depth - 1, false, sense * -1, alpha, beta);
+                    if (score >= bestSoFar) {
+                        bestSoFar = score;
+                        alpha = max(alpha, bestSoFar);
+                        if (saveMove) {
+                            _lastFoundMove = m;
+                        }
+                        if (beta <= alpha) {
+                            board.undo();
+                            break;
+                        }
+                    }
+                    board.undo();
+                }
+            } else if (sense == -1) {
+                for (Move m : board.legalMoves(board.turn())) {
+                    board.makeMove(m);
+                    int score = findMove(board, depth - 1, false, sense * -1, alpha, beta);
+                    if (score <= bestSoFar) {
+                        bestSoFar = score;
+                        beta = min(beta, bestSoFar);
+                        if (saveMove) {
+                            _lastFoundMove = m;
+                        }
+                        if (beta <= alpha) {
+                            board.undo();
+                            break;
+                        }
+                    }
+                    board.undo();
+                }
+            }
+            return bestSoFar;
+        }
     }
+
 
     /** Return a heuristically determined maximum search depth
      *  based on characteristics of BOARD. */
     private static int maxDepth(Board board) {
-        return 4; // FIXME?
+        return _maxDepth; // FIXME?
     }
 
     /** Return a heuristic value for BOARD. */
     private int staticScore(Board board) {
-        return 0;  // FIXME
+        // FIXME
+        if (board.winner() == WHITE) {
+            return WINNING_VALUE;
+        } else if (board.winner() == BLACK) {
+            return -1 * WINNING_VALUE;
+        } else if (willWin(board) != 0) {
+            return willWin(board) * WILL_WIN_VALUE;
+        }
+        return 0;
     }
 
     // FIXME: More here.
 
+    private int willWin(Board board) {
+        List<Move> moveLst = board.legalMoves(WHITE);
+        return 0;
+    }
+
+    private static int _maxDepth = 4;
 }

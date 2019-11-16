@@ -152,6 +152,9 @@ class Board {
         pieceMap.put(s, p);
         if (p == KING) {
             kingLocation = s;
+            if (s.isEdge()) {
+                _winner = WHITE;
+            }
         }
     }
 
@@ -238,7 +241,7 @@ class Board {
             Square other = to.rookMove(i, 2);
             if (isHostile(_turn.opponent(), other)) {
                 Square between = to.between(other);
-                if (get(between) == _turn.opponent()) {
+                if (get(between).side() == _turn.opponent()) {
                     if (get(between) == KING &&
                             (between == THRONE ||
                              between == NTHRONE ||
@@ -258,6 +261,12 @@ class Board {
             }
         }
         revPut(curr, to);
+        if (kingPosition() != null && kingPosition().isEdge()) {
+            _winner = WHITE;
+        }
+        if (_winner == null && _moveCount/2 >= _maxMove) {
+            _winner = turn();
+        }
         _turn = _turn.opponent();
     }
 
@@ -269,8 +278,9 @@ class Board {
     /** Capture the piece between SQ0 and SQ2, assuming a piece just moved to
      *  SQ0 and the necessary conditions are satisfied. */
     private void capture(Square sq0, Square sq2) {
-        if (sq0.between(sq2) == kingPosition()) {
+        if (get(sq0.between(sq2)) == KING) {
             _winner = BLACK;
+            kingLocation = null;
         }
         put(EMPTY, sq0.between(sq2));
     }
@@ -302,7 +312,7 @@ class Board {
      *  unless it is a repeated position or we are at the first move. */
     private void undoPosition() {
 
-        if (_moveCount > 0) {
+        if (_moveCount > 1) {
             prevBoard.remove(prevBoard.size() - 1);
             pieceMap.clear();
         }

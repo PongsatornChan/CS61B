@@ -80,4 +80,10 @@ public class BoardTest {
         System.out.println(myBoard);
 
     }
+
+    @Test
+    public void normTest() {
+        System.out.println(Integer.MAX_VALUE);
+    }
+
 }
