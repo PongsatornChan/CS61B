@@ -12,8 +12,8 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+/* import java.util.regex.Matcher; */
+/* import java.util.regex.Pattern; */
 
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -34,11 +34,14 @@ class GUI extends TopLevel implements View, Reporter {
     /** Resource name of Tablut help text. */
     static final String HELP_TEXT = "tablut/Help.html";
 
+    /* More commands? */
+    /* More stuff? */
     /** A new window with given TITLE providing a view of a Tablut board. */
     GUI(String title) {
         super(title, true);
         addMenuButton("Game->Quit", this::quit);
-        // More commands?
+        addMenuButton("Game->New", this::newGame);
+
         _widget = new BoardWidget(_pendingCommands);
         add(_widget,
             new LayoutSpec("y", 1,
@@ -48,7 +51,7 @@ class GUI extends TopLevel implements View, Reporter {
                  new LayoutSpec("x", 0, "y", 0,
                                 "height", 1,
                                 "width", 3));
-        // More stuff?
+
 
     }
 
@@ -57,7 +60,10 @@ class GUI extends TopLevel implements View, Reporter {
         _pendingCommands.offer("quit");
     }
 
-    // Other command responses?
+    /** Other command responses? */
+    private void newGame(String dummy) {
+        _pendingCommands.offer("new");
+    }
 
     /** Return the next command from our widget, waiting for it as necessary.
      *  The BoardWidget uses _pendingCommands to queue up moves that it

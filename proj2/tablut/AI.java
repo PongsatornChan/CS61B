@@ -79,7 +79,7 @@ class AI extends Player {
      *  of the board value and does not set _lastMoveFound. */
     private int findMove(Board board, int depth, boolean saveMove,
                          int sense, int alpha, int beta) {
-        if (depth == 0 || board.winner() != null) {
+        if (depth == 1 || board.winner() != null) {
             return staticScore(board);
         } else {
             int bestSoFar = -1 * sense * INFTY;
@@ -183,7 +183,7 @@ class AI extends Player {
                         sum += 5;
                         break;
                     } else if (board.get(s) == BLACK) {
-                        sum -= 20;
+                        sum -= _blackValue * 2;
                         break;
                     } else if (s.isEdge()) {
                         edges++;
@@ -191,11 +191,14 @@ class AI extends Player {
                 }
             }
             if (edges > 1) {
-                sum += 10000;
+                sum += _edgeScore;
             }
         }
         return sum;
     }
+
+    /** force win straetrgy. */
+    private static int _edgeScore = 100 * 100;
 
     /** max depth for which the search should stop. */
     private static int _maxDepth = 4;

@@ -9,12 +9,12 @@ import java.awt.Graphics2D;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 
-import static tablut.Piece.*;
+/*import static tablut.Piece.*; */
 import static tablut.Square.sq;
-import static tablut.Move.mv;
+/* import static tablut.Move.mv; */
 
 /** A widget that displays a Tablut game.
- *  @author
+ *  @author Pongsatorn Chanpanichravee
  */
 class BoardWidget extends Pad {
 
@@ -62,6 +62,8 @@ class BoardWidget extends Pad {
         _acceptingMoves = false;
     }
 
+    /* OTHER SQUARE COLORINGS? */
+    /* OTHER STUFF. */
     /** Draw the bare board G.  */
     private void drawGrid(Graphics2D g) {
         g.setColor(SQUARE_COLOR);
@@ -69,14 +71,14 @@ class BoardWidget extends Pad {
         g.setColor(THRONE_COLOR);
         g.fillRect(cx(Board.THRONE), cy(Board.THRONE),
                    SQUARE_SIDE, SQUARE_SIDE);
-        // OTHER SQUARE COLORINGS?
+
         g.setColor(GRID_LINE_COLOR);
         for (int k = 0; k <= SIZE; k += 1) {
             g.drawLine(cx(0), cy(k - 1), cx(SIZE), cy(k - 1));
             g.drawLine(cx(k), cy(-1), cx(k), cy(SIZE - 1));
         }
 
-        // OTHER STUFF.
+
     }
 
     @Override
@@ -87,12 +89,12 @@ class BoardWidget extends Pad {
 
     /** Draw the contents of S on G. */
     private void drawPiece(Graphics2D g, Square s) {
-        // FIXME
+        /** FIXME */
     }
 
     /** Handle a click on S. */
     private void click(Square s) {
-        // FIXME
+        /** FIXME */
         repaint();
     }
 
