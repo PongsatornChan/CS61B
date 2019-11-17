@@ -1,11 +1,14 @@
 package tablut;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
 
 import static tablut.Move.ROOK_MOVES;
 import static tablut.Piece.*;
 import static tablut.Square.*;
-import static tablut.Move.mv;
 
 
 /** The state of a Tablut Game.
@@ -91,7 +94,7 @@ class Board {
         revPut(KING, THRONE);
     }
 
-    /** Set the move limit to LIM.  It is an error if 2*LIM <= moveCount(). */
+    /** Set the move limit to LIM(N). It is an error if 2*LIM <= moveCount(). */
     void setMoveLimit(int n) {
         _maxMove = n;
     }
@@ -141,7 +144,6 @@ class Board {
                 return s;
             }
         }
-        System.out.println("Cannot find KING");
         return kingLocation;
     }
 
@@ -222,6 +224,9 @@ class Board {
         return isLegal(move.from(), move.to());
     }
 
+    /** Return true if the SQ is hostile for SIDE.
+     *  false if same side or emtpy.
+     */
     boolean isHostile(Piece side, Square sq) {
         if (side == KING) {
             side = WHITE;
@@ -245,7 +250,6 @@ class Board {
     /** Move FROM-TO, assuming this is a legal move. */
     void makeMove(Square from, Square to) {
         if (!isLegal(from, to)) {
-            //System.out.println("Illegal move!");
             return;
         }
         _moveCount++;
@@ -256,15 +260,16 @@ class Board {
             if (isHostile(_turn.opponent(), other)) {
                 Square between = to.between(other);
                 if (get(between).side() == _turn.opponent()) {
-                    if (get(between) == KING &&
-                            (between == THRONE ||
-                             between == NTHRONE ||
-                             between == ETHRONE ||
-                             between == STHRONE ||
-                             between == WTHRONE))  {
+                    if (get(between) == KING
+                            &&
+                            (between == THRONE
+                                    || between == NTHRONE
+                                    || between == ETHRONE
+                                    || between == STHRONE
+                                    || between == WTHRONE))  {
                         if (isHostile(_turn.opponent(),
-                                to.diag1(between)) &&
-                            isHostile(_turn.opponent(),
+                                to.diag1(between))
+                                && isHostile(_turn.opponent(),
                                     to.diag2(between))) {
                             capture(to, other);
                         }
@@ -274,14 +279,14 @@ class Board {
                 }
             }
         }
+        _turn = _turn.opponent();
         revPut(curr, to);
         if (kingPosition() != null && kingPosition().isEdge()) {
             _winner = WHITE;
         }
-        if (_winner == null && _moveCount/2 >= _maxMove) {
-            _winner = turn();
+        if (_winner == null && _moveCount / 2 >= _maxMove) {
+            _winner = WHITE;
         }
-        _turn = _turn.opponent();
     }
 
     /** Move according to MOVE, assuming it is a legal move. */
@@ -311,14 +316,15 @@ class Board {
             String prevStr = prevBoard.get(prevBoard.size() - 1);
             assert _turn.toString().charAt(0) == prevStr.charAt(0);
             for (int i = 0; i < NUM_SQUARES; i++) {
-                if (prevStr.charAt(i + 1) == 'W')
+                if (prevStr.charAt(i + 1) == 'W') {
                     put(WHITE, SQUARE_LIST.get(i));
-                else if (prevStr.charAt(i + 1) == 'B')
+                } else if (prevStr.charAt(i + 1) == 'B') {
                     put(BLACK, SQUARE_LIST.get(i));
-                else if (prevStr.charAt(i + 1) == 'K')
+                } else if (prevStr.charAt(i + 1) == 'K') {
                     put(KING, SQUARE_LIST.get(i));
-                else
+                } else {
                     put(EMPTY, SQUARE_LIST.get(i));
+                }
             }
         }
     }
@@ -343,7 +349,7 @@ class Board {
     /** Return a new mutable list of all legal moves on the current board for
      *  SIDE (ignoring whose turn it is at the moment). */
     List<Move> legalMoves(Piece side) {
-        ArrayList<Move> MoveList = new ArrayList<Move>();
+        ArrayList<Move> moveList = new ArrayList<Move>();
         HashSet<Square> locations = pieceLocations(side);
         Piece currSide = _turn;
         _turn = side;
@@ -356,14 +362,14 @@ class Board {
                 ArrayList<Move> temp = ROOK_MOVES[s.index()][i];
                 for (Move m : temp) {
                     if (isLegal(m)) {
-                        MoveList.add(m);
+                        moveList.add(m);
                     }
                 }
             }
 
         }
         _turn = currSide;
-        return MoveList;
+        return moveList;
     }
 
     /** Return true iff SIDE has a legal move. */
@@ -422,7 +428,7 @@ class Board {
     /** Return the contents of _board in the order of SQUARE_LIST as a sequence
      *  of characters: the toString values of the current turn and Pieces. */
     String encodedBoard() {
-        char[] result = new char[Square.SQUARE_LIST.size() + 1];
+        char[] result = new char[SQUARE_LIST.size() + 1];
         result[0] = turn().toString().charAt(0);
         for (Square sq : SQUARE_LIST) {
             result[sq.index() + 1] = get(sq).toString().charAt(0);
@@ -430,14 +436,16 @@ class Board {
         return new String(result);
     }
 
+    /** get method for pieceMap. Return pieceMap */
     public HashMap<Square, Piece> getPieceMap() {
         return pieceMap;
     }
-
+    /** get method for prevBoard. Return prevBoard */
     public ArrayList<String> getPrevBoard() {
         return prevBoard;
     }
 
+    /** get method for _maxMove. Return _maxMove */
     public int getMaxMove() {
         return _maxMove;
     }
@@ -452,13 +460,16 @@ class Board {
     /** True when current board is a repeated position (ending the game). */
     private boolean _repeated;
 
-
+    /** location of the king. */
     private Square kingLocation;
 
+    /** Number of Max move for each player. */
     private int _maxMove;
 
+    /** Map to keep Piece at Square. */
     private HashMap<Square, Piece> pieceMap;
 
+    /** Array to keep code from previous boards. */
     private ArrayList<String> prevBoard;
 
 }

@@ -3,7 +3,6 @@ package tablut;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import ucb.junit.textui;
-import java.util.List;
 
 
 public class BoardTest {
@@ -38,7 +37,7 @@ public class BoardTest {
         Square to3 = Square.sq("d5");
         Square to4 = Square.sq("d7");
         assertTrue(myBoard.isUnblockedMove(from, to1));
-        assertTrue(myBoard.isUnblockedMove(from,to2));
+        assertTrue(myBoard.isUnblockedMove(from, to2));
         assertFalse(myBoard.isUnblockedMove(from, to3));
         assertFalse(myBoard.isUnblockedMove(from, to4));
     }
@@ -61,25 +60,9 @@ public class BoardTest {
         assertTrue(checkBoard(movedState2, myBoard));
         myBoard.undo();
         assertTrue(checkBoard(initialBoardState, myBoard));
-
         myBoard.makeMove(Square.sq("d1"), Square.sq("d3"));
         myBoard.makeMove(Square.sq("d1"), Square.sq("d3"));
 
-    }
-
-    @Test
-    public void normTest() {
-        System.out.println(Integer.MAX_VALUE);
-    }
-
-    private void buildBoard(Board b, Piece[][] target) {
-        for (int col = 0; col < Board.SIZE; col++) {
-            for (int row = Board.SIZE - 1; row >= 0; row--) {
-                Piece piece = target[Board.SIZE - 1 - row][col];
-                b.put(piece, Square.sq(col, row));
-            }
-        }
-        System.out.println(b);
     }
 
     boolean checkBoard(Piece[][] state, Board board) {
@@ -99,7 +82,7 @@ public class BoardTest {
     static final Piece B = Piece.BLACK;
     static final Piece K = Piece.KING;
 
-    static final Piece[][] initialBoardState = {
+    static Piece[][] initialBoardState = {
             {E, E, E, B, B, B, E, E, E},
             {E, E, E, E, B, E, E, E, E},
             {E, E, E, E, W, E, E, E, E},
@@ -111,7 +94,7 @@ public class BoardTest {
             {E, E, E, B, B, B, E, E, E},
     };
 
-    static final Piece[][] movedState = {
+    static Piece[][] movedState = {
             {E, E, E, B, B, B, E, E, E},
             {E, E, E, W, B, E, E, E, E},
             {E, E, E, E, W, E, E, E, E},
@@ -123,7 +106,7 @@ public class BoardTest {
             {E, E, E, E, B, B, E, E, E},
     };
 
-    static final Piece[][] movedState2 = {
+    static Piece[][] movedState2 = {
             {E, E, E, B, B, B, E, E, E},
             {E, E, E, E, B, E, E, E, E},
             {E, E, E, E, W, E, E, E, E},

@@ -16,58 +16,49 @@ public class TablutTests {
     }
 
     /**
-     * Tests legalMoves for white pieces to make sure it returns all legal Moves.
+     * Tests legalMoves for white pieces to make sure
+     * it returns all legal Moves.
      * This method needs to be finished and may need to be changed
      * based on your implementation.
      */
     @Test
     public void testLegalWhiteMoves() {
-        // FIXME: REPLACE THIS LINE - Build a board by initializing it with initialBoardState
         Board b = new Board();
         b.init();
         buildBoard(b, initialBoardState);
 
-        List<Move> movesList = b.legalMoves(Piece.WHITE); // FIXME: Get legal moves for white pieces
+        List<Move> movesList = b.legalMoves(Piece.WHITE);
 
         assertEquals(56, movesList.size());
 
-        // Check for absence of illegal moves
         assertFalse(movesList.contains(Move.mv("e7-8")));
         assertFalse(movesList.contains(Move.mv("e8-f")));
 
-        // Check for presence of legal moves
         assertTrue(movesList.contains(Move.mv("e6-f")));
         assertTrue(movesList.contains(Move.mv("f5-8")));
-
-        // FIXME: Add more assertions
     }
 
     /**
-     * Tests legalMoves for black pieces to make sure it returns all legal Moves.
-     * This method needs to be finished and may need to be changed
+     * Tests legalMoves for black pieces to make sure
+     * it returns all legal Moves. This method needs
+     * to be finished and may need to be changed
      * based on your implementation.
      */
     @Test
     public void testLegalBlackMoves() {
-        // FIXME: REPLACE THIS LINE - Build a board by initializing it with initialBoardState
-
         Board b = new Board();
         b.init();
         buildBoard(b, initialBoardState);
 
-        List<Move> movesList = b.legalMoves(Piece.BLACK); // FIXME: Get legal moves for black pieces
+        List<Move> movesList = b.legalMoves(Piece.BLACK);
 
         assertEquals(80, movesList.size());
 
-        // Check for absence of illegal moves
         assertFalse(movesList.contains(Move.mv("e8-7")));
         assertFalse(movesList.contains(Move.mv("e7-8")));
 
-        // Check for presence of legal moves
         assertTrue(movesList.contains(Move.mv("f9-i")));
         assertTrue(movesList.contains(Move.mv("h5-1")));
-
-        // FIXME: Add more assertions
     }
 
     @Test
@@ -93,9 +84,6 @@ public class TablutTests {
     }
 
 
-    // FIXME: Add more test cases for other Board.java methods
-
-
     private void buildBoard(Board b, Piece[][] target) {
         for (int col = 0; col < Board.SIZE; col++) {
             for (int row = Board.SIZE - 1; row >= 0; row--) {
@@ -111,7 +99,7 @@ public class TablutTests {
     static final Piece B = Piece.BLACK;
     static final Piece K = Piece.KING;
 
-    static final Piece[][] initialBoardState = {
+    static Piece[][] initialBoardState = {
             {E, E, E, B, B, B, E, E, E},
             {E, E, E, E, B, E, E, E, E},
             {E, E, E, E, W, E, E, E, E},
@@ -123,7 +111,7 @@ public class TablutTests {
             {E, E, E, B, B, B, E, E, E},
     };
 
-    static final Piece[][] kingCap = {
+    static Piece[][] kingCap = {
             {E, E, E, B, B, B, E, E, E},
             {E, E, E, E, B, E, E, E, E},
             {E, E, E, E, E, E, E, E, E},
@@ -135,7 +123,7 @@ public class TablutTests {
             {E, E, E, B, B, B, E, E, E},
     };
 
-    static final Piece[][] kingCap2 = {
+    static Piece[][] kingCap2 = {
             {E, E, E, B, B, B, E, E, E},
             {E, E, E, E, B, E, E, E, E},
             {E, E, E, E, E, E, E, E, E},
@@ -147,7 +135,7 @@ public class TablutTests {
             {E, E, E, B, B, B, E, E, E},
     };
 
-    static final Piece[][] kingCap3 = {
+    static Piece[][] kingCap3 = {
             {E, E, E, B, B, B, E, E, E},
             {E, E, E, E, B, E, E, E, E},
             {E, E, E, E, E, E, E, E, E},

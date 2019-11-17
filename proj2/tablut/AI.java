@@ -1,6 +1,5 @@
 package tablut;
 
-import java.sql.Blob;
 import java.util.List;
 
 import static java.lang.Math.*;
@@ -10,7 +9,6 @@ import static tablut.Board.STHRONE;
 import static tablut.Board.ETHRONE;
 import static tablut.Board.NTHRONE;
 import static tablut.Square.SQUARE_LIST;
-import static tablut.Square.sq;
 import static tablut.Board.THRONE;
 import static tablut.Piece.*;
 
@@ -46,7 +44,7 @@ class AI extends Player {
 
     @Override
     String myMove() {
-        Move aiMove = findMove(); // FIXME
+        Move aiMove = findMove();
         _controller.reportMove(aiMove);
         return aiMove.toString();
     }
@@ -61,7 +59,6 @@ class AI extends Player {
     private Move findMove() {
         Board b = new Board(board());
         _lastFoundMove = null;
-        // FIXME
         if (myPiece() == WHITE) {
             findMove(b, 4, true, 1, -1 * WILL_WIN_VALUE, WILL_WIN_VALUE);
         } else {
@@ -82,7 +79,6 @@ class AI extends Player {
      *  of the board value and does not set _lastMoveFound. */
     private int findMove(Board board, int depth, boolean saveMove,
                          int sense, int alpha, int beta) {
-        // FIXME
         if (depth == 0 || board.winner() != null) {
             return staticScore(board);
         } else {
@@ -90,7 +86,8 @@ class AI extends Player {
             if (sense == 1) {
                 for (Move m : board.legalMoves(board.turn())) {
                     board.makeMove(m);
-                    int score = findMove(board, depth - 1, false, sense * -1, alpha, beta);
+                    int score = findMove(board, depth - 1,
+                            false, sense * -1, alpha, beta);
                     if (score >= bestSoFar) {
                         bestSoFar = score;
                         alpha = max(alpha, bestSoFar);
@@ -107,7 +104,8 @@ class AI extends Player {
             } else if (sense == -1) {
                 for (Move m : board.legalMoves(board.turn())) {
                     board.makeMove(m);
-                    int score = findMove(board, depth - 1, false, sense * -1, alpha, beta);
+                    int score = findMove(board, depth - 1,
+                            false, sense * -1, alpha, beta);
                     if (score <= bestSoFar) {
                         bestSoFar = score;
                         beta = min(beta, bestSoFar);
@@ -130,12 +128,11 @@ class AI extends Player {
     /** Return a heuristically determined maximum search depth
      *  based on characteristics of BOARD. */
     private static int maxDepth(Board board) {
-        return _maxDepth; // FIXME?
+        return _maxDepth;
     }
 
     /** Return a heuristic value for BOARD. */
     private int staticScore(Board board) {
-        // FIXME
         if (board.winner() == WHITE) {
             return WINNING_VALUE;
         } else if (board.winner() == BLACK) {
@@ -154,16 +151,18 @@ class AI extends Player {
         }
     }
 
-    // FIXME: More here.
-
+    /** Return a heuristic value considering the
+     *  position and surrounding of KING in
+     *  BOARD. (Experimental)
+     */
     private int kingCondition(Board board) {
         int sum = 0;
         Square king = board.kingPosition();
-        if (king == THRONE ||
-                king == NTHRONE ||
-                king == ETHRONE ||
-                king == STHRONE ||
-                king == WTHRONE) {
+        if (king == THRONE
+                || king == NTHRONE
+                || king == ETHRONE
+                || king == STHRONE
+                || king == WTHRONE) {
             sum += _safeBonus;
             for (int i = 0; i < 4; i++) {
                 List<Square> rookMoves = Square.ROOK_SQUARES[king.index()][i];
@@ -198,11 +197,15 @@ class AI extends Player {
         return sum;
     }
 
+    /** max depth for which the search should stop. */
     private static int _maxDepth = 4;
 
+    /** heuristic value for KING in CASTLE area. */
     private final int _safeBonus = 10;
 
+    /** heuristic value of a black piece. */
     private final int _blackValue = 10;
 
+    /** heuristic value of a white piece. */
     private final int _whiteValue = 20;
 }
