@@ -121,7 +121,7 @@ class Board {
 
         if (prevBoard.contains(encodedBoard())) {
             _repeated = true;
-            _winner = turn().opponent();
+            _winner = turn();
         }
         prevBoard.add(encodedBoard());
 
