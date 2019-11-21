@@ -412,14 +412,14 @@ class Board {
     private HashSet<Square> pieceLocations(Piece side) {
         assert side != EMPTY;
         HashSet<Square> locations = new HashSet<Square>();
-        for (Square s : SQUARE_LIST) {
-            if (get(s) == side) {
-                locations.add(s);
-            }
-        }
         if (side == WHITE) {
             if (kingPosition() != null) {
                 locations.add(kingPosition());
+            }
+        }
+        for (Square s : SQUARE_LIST) {
+            if (get(s) == side) {
+                locations.add(s);
             }
         }
         return locations;
