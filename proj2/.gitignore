@@ -151,4 +151,8 @@ tramp
 *.un~
 Session.vim
 .netrwhist
+
+### test input output ###
+*.in
+*.std
 *~
