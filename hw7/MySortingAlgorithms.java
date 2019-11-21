@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -39,6 +40,14 @@ public class MySortingAlgorithms {
         @Override
         public void sort(int[] array, int k) {
             // FIXME
+            for (int i = 1; i < k; i++) {
+                for (int j = i; j > 0; j--) {
+                    if (array[j - 1] <= array[j]) {
+                        break;
+                    }
+                    swap(array, j - 1, j);
+                }
+            }
         }
 
         @Override
@@ -57,6 +66,19 @@ public class MySortingAlgorithms {
         @Override
         public void sort(int[] array, int k) {
             // FIXME
+            int smallest;
+            int smallIndex;
+            for (int i = 0; i < k; i++) {
+                smallIndex = i;
+                smallest = array[i];
+                for (int j = i; j < k; j++) {
+                    if (smallest > array[j]) {
+                        smallest = array[j];
+                        smallIndex = j;
+                    }
+                }
+                swap(array, i, smallIndex);
+            }
         }
 
         @Override
@@ -74,9 +96,48 @@ public class MySortingAlgorithms {
         @Override
         public void sort(int[] array, int k) {
             // FIXME
+            sort(array, 0, k - 1);
         }
 
         // may want to add additional methods
+        public void sort(int[] array, int start, int end) {
+            if (start == end) {
+                return;
+            } else if (start == end - 1) {
+                if (array[start] > array[end]) {
+                    swap(array, start, end);
+                }
+            } else {
+                int mid = (end + start)/2;
+                sort(array, start, mid);
+                sort(array, mid + 1, end);
+                merge(array, start, mid, end);
+            }
+        }
+
+        public void merge(int[] array, int start, int mid, int end) {
+            int[] list = new int[end - start + 1];
+            int i1 = start;
+            int i2 = mid + 1;
+            for (int i = 0; i < list.length ; i++) {
+                if (i2 == end + 1) {
+                    list[i] = array[i1];
+                    i1++;
+                } else if (i1 == mid + 1) {
+                    list[i] = array[i2];
+                    i2++;
+                } else if (array[i1] > array[i2]) {
+                    list[i] = array[i2];
+                    i2++;
+                } else {
+                    list[i] = array[i1];
+                    i1++;
+                }
+            }
+            for (int i = 0; i < list.length; i++) {
+                array[start + i] = list[i];
+            }
+        }
 
         @Override
         public String toString() {
@@ -145,6 +206,32 @@ public class MySortingAlgorithms {
         @Override
         public void sort(int[] a, int k) {
             // FIXME
+            ArrayList<Integer>[] digitList = new ArrayList[10];
+            for (int i = 0; i < digitList.length; i++) {
+                digitList[i] = new ArrayList<Integer>();
+            }
+            int div = 1;
+            boolean moreDigit = true;
+            while (moreDigit) {
+                moreDigit = false;
+                for (int i = 0; i < k; i++) {
+                    int digit = (a[i] % (div * 10))/div;
+                    if (digit > 0) {
+                        moreDigit = true;
+                    }
+                    digitList[digit].add(a[i]);
+                }
+                int i = 0;
+                for (ArrayList<Integer> lst : digitList) {
+                    for (int num : lst) {
+                        a[i] = num;
+                        i++;
+                    }
+                    lst.clear();
+                }
+                div *= 10;
+            }
+
         }
 
         @Override

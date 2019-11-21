@@ -19,6 +19,14 @@ public class MySortingAlgorithmsTest {
 
     private SortingAlgorithm javaSort = new MySortingAlgorithms.JavaSort();
 
+    @Test
+    public void test() {
+        int[] original = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+        new MySortingAlgorithms.LSDSort().sort(original, original.length);
+        for (int i : original) {
+            System.out.print(i + ", ");
+        }
+    }
 
     /**
      * Checks the correctness of each sorting algorithm on an
