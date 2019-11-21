@@ -17,7 +17,6 @@ public class BST {
      * // Provide a descriptive comment for this method here.
      */
     private BSTNode linkedListToTree(Iterator iter, int n) {
-        // YOUR CODE HERE
         return null;
     }
 

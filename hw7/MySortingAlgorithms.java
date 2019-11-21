@@ -101,7 +101,7 @@ public class MySortingAlgorithms {
 
         // may want to add additional methods
         public void sort(int[] array, int start, int end) {
-            if (start == end) {
+            if (start >= end) {
                 return;
             } else if (start == end - 1) {
                 if (array[start] > array[end]) {
