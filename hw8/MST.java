@@ -2,7 +2,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 /** Minimal spanning tree utility.
- *  @author
+ *  @author Pongsatorn Chanpanichravee
  */
 public class MST {
 
@@ -17,7 +17,19 @@ public class MST {
      *  are a subset of those in E (they do not include copies of the
      *  original edges, just the original edges themselves.) */
     public static int[][] mst(int V, int[][] E) {
-        return null;  // FIXME
+        int[][] copy = Arrays.copyOf(E, E.length);
+        Arrays.sort(copy, EDGE_WEIGHT_COMPARATOR);
+        UnionFind nodes = new UnionFind(V);
+        int[][] edges = new int[V - 1][];
+        int indexE = 0;
+        for (int i = 0; i < E.length && indexE < edges.length ; i++) {
+            if (!nodes.samePartition(E[i][0], E[i][1])) {
+                nodes.union(E[i][0], E[i][1]);
+                edges[indexE] = E[i];
+                indexE++;
+            }
+        }
+        return edges;
     }
 
     /** An ordering of edges by weight. */
