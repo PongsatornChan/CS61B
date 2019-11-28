@@ -22,10 +22,10 @@ public class MST {
         UnionFind nodes = new UnionFind(V);
         int[][] edges = new int[V - 1][];
         int indexE = 0;
-        for (int i = 0; i < E.length && indexE < edges.length ; i++) {
-            if (!nodes.samePartition(E[i][0], E[i][1])) {
-                nodes.union(E[i][0], E[i][1]);
-                edges[indexE] = E[i];
+        for (int i = 0; i < copy.length && indexE < edges.length ; i++) {
+            if (!nodes.samePartition(copy[i][0], copy[i][1])) {
+                nodes.union(copy[i][0], copy[i][1]);
+                edges[indexE] = copy[i];
                 indexE++;
             }
         }

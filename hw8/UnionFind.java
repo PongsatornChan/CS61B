@@ -39,29 +39,19 @@ public class UnionFind {
 
     /** Union U and V into a single partition, returning its representative. */
     public int union(int u, int v) {
-        nodes[v] = u;
-        return u;
+        int headU = find(u);
+        int headV = find(v);
+        if (headU < headV) {
+            nodes[headV] = headU;
+            return headU;
+        } else {
+            nodes[headU] = headV;
+            return headV;
+        }
+
     }
 
-
-    // FIXME
+    /** array of int to keep track of pointers */
     int[] nodes;
 
-
-//    public static void main(String[] args) {
-//        UnionFind a = new UnionFind(10);
-//        System.out.println(a.find(3));
-//        System.out.println(a.find(1));
-//        System.out.println(a.find(10));
-//
-//        a.union(3, 10);
-//        System.out.println(a.find(10));
-//
-//        a.union(3, 1);
-//        System.out.println(a.find(1));
-//
-//        a.union(2, 3);
-//        System.out.println(a.find(10));
-//        System.out.println(a.nodes[10]);
-//    }
 }
