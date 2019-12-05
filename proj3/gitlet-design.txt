@@ -4,11 +4,49 @@ Gitlet Design Document
 
 Classes and Data Structures
 ---------------------------
-
+Repo: *Persist* Class that keep everything
+Dir: Class that represent a directory or folder
+Blob: * Persist ** Serializable ** SHA1 **keep track of content and what is it parent
+File: file ** might not need **
+Commit: * Persist ** Serializable ** SHA1 ** Class to keep info for each commit
+Stage: stage to keep track of what to add or what to remove
+Tag: *Persist* pointer to a Commit
 
 Algorithms
 ----------
+Repo: Keep commits, header, log (txt file that keep commit name, time, commit message)
+
+Dir: implement using linkedList Tree structure for directories structure
+    Field : pointers to parent and children dir
+            path to that dir (not sure yet)
+            pointers to files (Blob) in it (if any) (that need to be track)
+    Method:
+
+Blob: keep lines that change in a given File
+    Field: name or id
+
+File: have a blob, name, time of late modified
+
+Commit: linkedList Tree structure (cannot be change when created)
+    Field: Dir, name, message, time
+           pointer to the parent commit(s) if from merge
+           filenames and references to blobs
+    Method:
+
+Stage:
+
+Tag: pointer to specific commit
+    Field: name
+    Method:
 
 
 Persistence
 -----------
+What to keep track of:
+
+.gitlet:
+    logs
+    head (branch)
+    tags
+    blobs
+    staging area
