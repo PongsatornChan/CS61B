@@ -21,10 +21,10 @@ public class Main {
     /** tags folder. */
     static final File TAGS_FOLDER = Utils.join(MAIN_FOLDER, "refs", "tags");
 
-    /** head pointer */
+    /** head pointer. */
     static String header;
 
-    /** master pointer */
+    /** master pointer. */
     static String branchName;
 
     /** Usage: java gitlet.Main ARGS, where ARGS contains
@@ -122,14 +122,15 @@ public class Main {
         Commit.COMMIT_FOLDER.mkdir();
         STAGE_ADD.mkdir();
         STAGE_RM.mkdir();
-        BRANCHES_FOLDER.mkdir();
-        TAGS_FOLDER.mkdir();
+        BRANCHES_FOLDER.mkdirs();
+        TAGS_FOLDER.mkdirs();
 
         header = Commit.FIRST_COMMIT.getName();
         branchName = "master";
-
         saveRef(MAIN_FOLDER, "head", header);
         saveRef(BRANCHES_FOLDER, branchName, header);
+
+        Commit.FIRST_COMMIT.saveCommit();
     }
 
     public static void doAdd(String[] args) {
@@ -142,11 +143,13 @@ public class Main {
             exitWithError("Not in an initialized Gitlet directory.");
         }
 
+        header = Utils.readObject(Utils.join(MAIN_FOLDER, "head"), String.class);
         Blob toAddB = new Blob(args[1]);
         String hashNameToAdd = toAddB.getHashName();
         Commit currCommit = Commit.fromFile(header);
 
-        if (currCommit.getHashBlobs().get(filename).equals(hashNameToAdd)) {
+        String hashBlob = currCommit.getHashBlobs().get(filename);
+        if (hashBlob != null && hashBlob.equals(hashNameToAdd)) {
             File[] fileLst = STAGE_ADD.listFiles();
             for (File x : fileLst) {
                 if (x.getName().equals(toAdd.getName())) {
@@ -162,6 +165,7 @@ public class Main {
         validateNumArgs(args, 2);
         String commitMsg = args[1];
 
+        header = Utils.readObject(Utils.join(MAIN_FOLDER, "head"), String.class);
         Commit parentCommit = Commit.fromFile(header);
         HashMap<String, String> newHashBlobs = new HashMap<String, String>();
         newHashBlobs.putAll(parentCommit.getHashBlobs());
@@ -169,11 +173,23 @@ public class Main {
         for(File x : STAGE_ADD.listFiles()) {
             Blob theBlob = Utils.readObject(x, Blob.class);
             newHashBlobs.put(x.getName(), theBlob.getHashName());
+            theBlob.saveBlob();
+            x.delete();
         }
 
         Commit thisCommit = new Commit(System.currentTimeMillis(), commitMsg
                 , newHashBlobs, parentCommit.getName());
 
+        header = thisCommit.getName();
+        branchName = "master";
+        saveRef(MAIN_FOLDER, "head", header);
+        saveRef(BRANCHES_FOLDER, branchName, header);
+
         thisCommit.saveCommit();
+    }
+
+    public static void doLog(String[] args) {
+        validateNumArgs(args, 1);
+
     }
 }

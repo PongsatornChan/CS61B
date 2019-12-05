@@ -2,6 +2,7 @@ package gitlet;
 
 import java.io.Serializable;
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,7 +10,7 @@ public class Commit implements Serializable {
 
     public static final Commit FIRST_COMMIT =
             new Commit(System.currentTimeMillis() / 1000L, "initial commit",
-                    new HashMap<String, String>(), null );
+                    new HashMap<String, String>(), "" );
 
     /** Folder that commits live in. */
     static final File COMMIT_FOLDER = Utils.join(Main.MAIN_FOLDER, "commits");
@@ -34,11 +35,11 @@ public class Commit implements Serializable {
         this.message = message;
         this.hashBlobs = hashBlobs;
         this.hashParentCommit1 = hashParentCommit1;
-        this.name = Utils.sha1(date, message, hashBlobs, hashParentCommit1);
+        this.name = Utils.sha1(new Date(date).toString(), message, hashBlobs.toString(), hashParentCommit1);
     }
 
     /**
-     * Reads in and deserializes a blob from a file with hashName NAME in COMMIT_FOLDER.
+     * Reads in and deserializes a commit from a file with hashName NAME in COMMIT_FOLDER.
      *
      * @param name SHA1-Name of commit to load
      * @return commit read from file
@@ -57,6 +58,13 @@ public class Commit implements Serializable {
      */
     public void saveCommit() {
         Utils.writeObject(Utils.join(COMMIT_FOLDER, this.name), this);
+    }
+
+    public String printLog() {
+        String log = "===\n";
+        log += "commit " + this.name + "\n";
+        log += "Date: ";
+        return log; //FIXME
     }
 
     public String getName() {

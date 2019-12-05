@@ -2,6 +2,9 @@ package gitlet;
 
 import ucb.junit.textui;
 import org.junit.Test;
+
+import java.util.Date;
+
 import static org.junit.Assert.*;
 
 /** The suite of all JUnit tests for the gitlet package.
@@ -15,9 +18,10 @@ public class UnitTest {
         textui.runClasses(UnitTest.class);
     }
 
-    /** A dummy test to avoid complaint. */
+    /** Test time formatting */
     @Test
-    public void placeholderTest() {
+    public void testTime() {
+        Date date = new Date(System.currentTimeMillis());
     }
 
 }
