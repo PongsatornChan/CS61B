@@ -1,0 +1,16 @@
+# Basic initialization and check that
+# .gitlet, .gitlet/stage_add, .gitlet/stage_rm,
+# .gitlet/refs/branches, .gitlet/refs/tags
+# .gitlet/commits , .gitlet/blobs
+# .gitlet/head , .gitlet/refs/branches/master
+> init
+<<<
+E .gitlet
+E .gitlet/stage_add
+E .gitlet/stage_rm
+E .gitlet/commits
+E .gitlet/blobs
+E .gitlet/refs/branches
+E .gitlet/refs/branches/master
+E .gitlet/refs/tags
+E .gitlet/head

@@ -1,0 +1,11 @@
+# test print log
+
+> init
+<<<
+> log
+===
+commit 928d8d08fdd57908e58026c6705694dcc6c5185a
+Date: Wed Dec 31 16:00:00 1969 -0800
+initial commit
+
+<<<
