@@ -11,7 +11,7 @@ public class Main {
     /** Current Working Directory. */
     static final File CWD = new File(".");
     /** Main metadata folder. */
-    static final File MAIN_FOLDER = Utils.join(CWD, ".capers");
+    static final File MAIN_FOLDER = Utils.join(CWD, ".gitlet");
     /** add stage folder. */
     static final File STAGE_ADD = Utils.join(MAIN_FOLDER, "stage_add");
     /** remove stage folder. */
