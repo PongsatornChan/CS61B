@@ -1,9 +1,11 @@
 package gitlet;
 
+import java.text.SimpleDateFormat;
+import java.util.Formatter;
 import ucb.junit.textui;
 import org.junit.Test;
-
 import java.util.Date;
+import java.util.TimeZone;
 
 import static org.junit.Assert.*;
 
@@ -21,7 +23,10 @@ public class UnitTest {
     /** Test time formatting */
     @Test
     public void testTime() {
-        Date date = new Date(System.currentTimeMillis());
+        System.out.print(Commit.FIRST_COMMIT.logMsg());
+
+        String test = "012345";
+        System.out.println(test.substring(0, 4));
     }
 
 }

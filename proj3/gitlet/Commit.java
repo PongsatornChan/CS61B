@@ -2,6 +2,7 @@ package gitlet;
 
 import java.io.Serializable;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 public class Commit implements Serializable {
 
     public static final Commit FIRST_COMMIT =
-            new Commit(System.currentTimeMillis() / 1000L, "initial commit",
+            new Commit(0, "initial commit",
                     new HashMap<String, String>(), "" );
 
     /** Folder that commits live in. */
@@ -30,12 +31,26 @@ public class Commit implements Serializable {
     private String hashParentCommit1;
     private Commit parentCommit1;
 
+    private String hashParentCommit2;
+
     public Commit(long date, String message, HashMap<String, String> hashBlobs, String hashParentCommit1) {
         this.date = date;
         this.message = message;
         this.hashBlobs = hashBlobs;
         this.hashParentCommit1 = hashParentCommit1;
+        this.hashParentCommit2 = "";
         this.name = Utils.sha1(new Date(date).toString(), message, hashBlobs.toString(), hashParentCommit1);
+    }
+
+    public Commit(long date, String message, HashMap<String, String> hashBlobs,
+                  String hashParentCommit1, String hashParentCommit2) {
+        this.date = date;
+        this.message = message;
+        this.hashBlobs = hashBlobs;
+        this.hashParentCommit1 = hashParentCommit1;
+        this.hashParentCommit2 = hashParentCommit2;
+        this.name = Utils.sha1(new Date(date).toString(), message, hashBlobs.toString(),
+                hashParentCommit1, hashParentCommit2);
     }
 
     /**
@@ -60,11 +75,23 @@ public class Commit implements Serializable {
         Utils.writeObject(Utils.join(COMMIT_FOLDER, this.name), this);
     }
 
-    public String printLog() {
+    public String logMsg() {
         String log = "===\n";
         log += "commit " + this.name + "\n";
         log += "Date: ";
-        return log; //FIXME
+
+        Date date = new Date(this.date);
+        SimpleDateFormat format = new SimpleDateFormat("Z");
+        String lst = date.toString().replaceFirst(" PST ", " ");
+        lst += " " + format.format(date);
+
+        log += lst + "\n";
+        if (!hashParentCommit2.equals("")) {
+            log += "Merge: " + hashParentCommit1.substring(0, 7);
+            log += hashParentCommit2.substring(0, 7) + "\n";
+        }
+        log += this.message + "\n\n";
+        return log;
     }
 
     public String getName() {
@@ -73,6 +100,10 @@ public class Commit implements Serializable {
 
     public HashMap<String, String> getHashBlobs() {
         return hashBlobs;
+    }
+
+    public String getHashParentCommit1() {
+        return this.hashParentCommit1;
     }
 
 }

@@ -48,6 +48,7 @@ public class Main {
             case "rm":
                 break;
             case "log":
+                doLog(args);
                 break;
             case "global-log":
                 break;
@@ -108,6 +109,10 @@ public class Main {
         Utils.writeObject(Utils.join(targetedDir, name), ref);
     }
 
+    public static String getHeader() {
+        return Utils.readObject(Utils.join(MAIN_FOLDER, "head"), String.class);
+    }
+
     /**
      * init gitlet in the current directory (proj3 by default)
      * @param args
@@ -143,7 +148,7 @@ public class Main {
             exitWithError("Not in an initialized Gitlet directory.");
         }
 
-        header = Utils.readObject(Utils.join(MAIN_FOLDER, "head"), String.class);
+        header = getHeader();
         Blob toAddB = new Blob(args[1]);
         String hashNameToAdd = toAddB.getHashName();
         Commit currCommit = Commit.fromFile(header);
@@ -165,7 +170,7 @@ public class Main {
         validateNumArgs(args, 2);
         String commitMsg = args[1];
 
-        header = Utils.readObject(Utils.join(MAIN_FOLDER, "head"), String.class);
+        header = getHeader();
         Commit parentCommit = Commit.fromFile(header);
         HashMap<String, String> newHashBlobs = new HashMap<String, String>();
         newHashBlobs.putAll(parentCommit.getHashBlobs());
@@ -190,6 +195,14 @@ public class Main {
 
     public static void doLog(String[] args) {
         validateNumArgs(args, 1);
+
+        header = getHeader();
+
+        for (String curr = header; !curr.equals(""); ){
+            Commit currCom = Commit.fromFile(curr);
+            System.out.print(currCom.logMsg());
+            curr = currCom.getHashParentCommit1();
+        }
 
     }
 }
