@@ -64,4 +64,8 @@ public class Blob implements Serializable{
         return this.filename;
     }
 
+    public String getContent() {
+        return this.content;
+    }
+
 }

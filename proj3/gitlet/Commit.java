@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class Commit implements Serializable {
 
@@ -92,6 +93,38 @@ public class Commit implements Serializable {
         }
         log += this.message + "\n\n";
         return log;
+    }
+
+    /**
+     * helper function that return the blob with FILENAME.
+     *
+     * @param filename name (not sha1) of file to be return as blob
+     * @return the blob or null if this commit does not contain file with FILENAME
+     */
+    public Blob getBlobFromFile(String filename) {
+        if (!hashBlobs.containsKey(filename)) {
+            return null;
+        } else {
+            return Blob.fromFile(hashBlobs.get(filename));
+        }
+    }
+
+    /**
+     * check if a file with name FILENAME is tracked at this commit.
+     *
+     * @param filename name of file (not sha1) to be checked
+     * @return true if tracked, false otherwise
+     */
+    public boolean isTracked(String filename) {
+        return hashBlobs.containsKey(filename);
+    }
+
+    /**
+     *
+     * @return set of filename that this commit tracked
+     */
+    public Set<String> getAllFile() {
+        return hashBlobs.keySet();
     }
 
     public String getName() {

@@ -2,6 +2,6 @@
 # create a file name wug.txt and copy content from src/wug.txt to it
 > init
 <<<
-+ wug1.txt wug.txt
++ wug.txt wug.txt
 > add wug.txt
 <<<

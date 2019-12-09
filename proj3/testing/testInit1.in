@@ -13,4 +13,5 @@ E .gitlet/blobs
 E .gitlet/refs/branches
 E .gitlet/refs/branches/master
 E .gitlet/refs/tags
+E .gitlet/log
 E .gitlet/head
