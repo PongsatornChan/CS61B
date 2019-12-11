@@ -1,8 +1,12 @@
 package gitlet;
 
+import com.sun.tools.corba.se.idl.Util;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** Driver class for Gitlet, the tiny stupid version-control system.
  *  @author Pongsatorn Chanpanichravee
@@ -21,8 +25,13 @@ public class Main {
     static final File BRANCHES_FOLDER = Utils.join(MAIN_FOLDER, "refs", "branches");
     /** tags folder. */
     static final File TAGS_FOLDER = Utils.join(MAIN_FOLDER, "refs", "tags");
-    /** file to keep all log */
+    /** file to keep all log. */
     static final File LOG_FLIE = Utils.join(MAIN_FOLDER, "log");
+    /** Path to HEAD file that keep track of current branch. */
+    static final File CURR_BRANCH = Utils.join(MAIN_FOLDER, "HEAD");
+    /** Path to head file that keep track of head commit. */
+    static final File HEAD_FILE = Utils.join(MAIN_FOLDER, "refs", "head");
+
 
     /** head pointer. */
     static String header;
@@ -58,8 +67,10 @@ public class Main {
                 doGlobalLog(args);
                 break;
             case "find":
+                doFind(args);
                 break;
             case "status":
+
                 break;
             case "checkout":
                 doCheckout(args);
@@ -105,6 +116,15 @@ public class Main {
     }
 
     /**
+     * check if .gitlet exist.
+     */
+    public static void checkInit() {
+        if (!MAIN_FOLDER.exists()) {
+            exitWithError("Not in an initialized Gitlet directory.");
+        }
+    }
+
+    /**
      * Saves a ref to a file for future use.
      *
      * @param targetedDir location to save this ref
@@ -123,7 +143,7 @@ public class Main {
      */
     public static String getRef(String refName) {
         if (refName.equalsIgnoreCase("head")) {
-            return Utils.readContentsAsString(Utils.join(MAIN_FOLDER, "head"));
+            return Utils.readContentsAsString(HEAD_FILE);
         } else {
             File ref = Utils.join(BRANCHES_FOLDER, refName);
             if (!ref.exists()) {
@@ -131,6 +151,15 @@ public class Main {
             }
             return Utils.readContentsAsString(ref);
         }
+    }
+
+    /**
+     * But if REF_NAME is current branch, return path
+     * to the branch file
+     * @return name of current branch
+     */
+    public static String getCurrBranchName() {
+        return Utils.readContentsAsString(CURR_BRANCH);
     }
 
     /**
@@ -206,23 +235,35 @@ public class Main {
         initFileDir();
 
         header = Commit.FIRST_COMMIT.getName();
-        branchName = "master";
 
-        writeFile(Utils.join(MAIN_FOLDER, "head"), header, false);
+        writeFile(CURR_BRANCH, "master", false);
+        writeFile(HEAD_FILE, header, false);
         writeFile(Utils.join(BRANCHES_FOLDER, "master"), header, false);
 
         writeFile(LOG_FLIE, Commit.FIRST_COMMIT.logMsg(), false);
         Commit.FIRST_COMMIT.saveCommit();
     }
 
+    /**
+     * Create a blob out of the file,
+     * check if this blob is the same as the one current commit has
+     * (check by the same sha1 name)
+     * if so, remove blob from stage_add.
+     * (since it is the same no need to commit again)
+     * Otherwise, override blob in stage_add with this new one.
+     *
+     * If file does not exist, error
+     *
+     * @param args
+     */
     public static void doAdd(String[] args) {
+        checkInit();
         validateNumArgs(args, 2);
+
         File toAdd = Utils.join(CWD, args[1]);
         String filename = args[1];
         if (!toAdd.exists()) {
             exitWithError("File does not exist.");
-        } else if (!MAIN_FOLDER.exists()) {
-            exitWithError("Not in an initialized Gitlet directory.");
         }
 
         header = getRef("head");
@@ -245,22 +286,32 @@ public class Main {
 
     public static void doCommit(String[] args) {
         // Commit from detact head still need to be devolop
+        checkInit();
+        if (args.length == 1) {
+            exitWithError("Please enter a commit message.");
+        }
         validateNumArgs(args, 2);
         String commitMsg = args[1];
+
+        File[] add = STAGE_ADD.listFiles();
+        File[] rm = STAGE_RM.listFiles();
+        if (add.length == 0 && rm.length == 0) {
+            exitWithError("No changes added to the commit.");
+        }
 
         header = getRef("head");
         Commit parentCommit = Commit.fromFile(header);
         HashMap<String, String> newHashBlobs = new HashMap<String, String>();
         newHashBlobs.putAll(parentCommit.getHashBlobs());
 
-        for(File x : STAGE_ADD.listFiles()) {
+        for(File x : add) {
             Blob theBlob = Utils.readObject(x, Blob.class);
             newHashBlobs.put(x.getName(), theBlob.getHashName());
             theBlob.saveBlob();
             x.delete();
         }
 
-        for(File x : STAGE_RM.listFiles()) {
+        for(File x : rm) {
             newHashBlobs.remove(x.getName());
             x.delete();
         }
@@ -271,7 +322,8 @@ public class Main {
         header = thisCommit.getName();
         branchName = "master";
 
-        writeFile(Utils.join(MAIN_FOLDER, "head"), header, false);
+        writeFile(HEAD_FILE, header, false);
+        writeFile(CURR_BRANCH, branchName, false);
         writeFile(Utils.join(BRANCHES_FOLDER, branchName), header, false);
 
         writeFile(LOG_FLIE, thisCommit.logMsg(), true);
@@ -279,6 +331,7 @@ public class Main {
     }
 
     public static void doLog(String[] args) {
+        checkInit();
         validateNumArgs(args, 1);
 
         header = getRef("head");
@@ -291,6 +344,7 @@ public class Main {
     }
 
     public static void doGlobalLog(String[] args) {
+        checkInit();
         validateNumArgs(args, 1);
         System.out.print(Utils.readContentsAsString(LOG_FLIE));
     }
@@ -324,6 +378,7 @@ public class Main {
      * @param args
      */
     public static void doCheckout(String[] args) {
+        checkInit();
         if (args.length == 2) {
             header = getRef("head");
             String comId = getRef(args[1]);
@@ -344,6 +399,8 @@ public class Main {
             for (String filename : myCommit.getAllFile()) {
                 checkoutHelper(myCommit, filename);
             }
+            writeFile(HEAD_FILE, comId, false);
+            writeFile(CURR_BRANCH, args[1], false);
 
         } else if (args.length == 3) {
             header = getRef("head");
@@ -357,7 +414,17 @@ public class Main {
         }
     }
 
+    /**
+     * Remove file named Filename from stage_add if there is one.
+     * If tracked by current commit (head), mark for untracked (stage_rm)
+     * and delete the file in working directory.
+     *
+     * If the file is untrack and unstage, error.
+     *
+     * @param args
+     */
     public static void doRemove(String[] args) {
+        checkInit();
         validateNumArgs(args, 2);
 
         boolean isStage = true;
@@ -377,6 +444,27 @@ public class Main {
             Utils.restrictedDelete(workFile);
         } else if (!isStage) {
             exitWithError("No reason to remove the file.");
+        }
+    }
+
+    public static void doFind(String[] args) {
+        checkInit();
+        validateNumArgs(args, 2);
+
+        String comment = args[1];
+        String log = Utils.readContentsAsString(LOG_FLIE);
+        String[] commits = log.split("\\s\\s");
+        boolean found = false;
+        for (String com : commits) {
+            if (com.contains(comment)) {
+                found = true;
+                Pattern pattern = Pattern.compile("\\w{40}");
+                Matcher matcher = pattern.matcher(com);
+                System.out.println(matcher.group());
+            }
+        }
+        if (!found) {
+            exitWithError("Found no commit with that message.");
         }
     }
 }

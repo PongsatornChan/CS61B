@@ -1,0 +1,18 @@
+# testing Rm function
+# create wug.txt, add it, commit it, then remove.
+# since I did commit, wug.txt is tracked
+# so wug.txt is deleted and in stage_rm also
+> init
+<<<
++ wug.txt wug.txt
+> add wug.txt
+<<<
+E .gitlet/stage_add/wug.txt
+E wug.txt
+> commit "track wug.txt"
+<<<
+* .gitlet/stage_add/wug.txt
+> rm wug.txt
+<<<
+* wug.txt
+E .gitlet/stage_rm/wug.txt

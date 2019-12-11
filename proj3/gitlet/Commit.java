@@ -63,8 +63,8 @@ public class Commit implements Serializable {
     public static Commit fromFile(String name) {
         File commitFile = Utils.join(COMMIT_FOLDER, name);
         if (!commitFile.exists()) {
-            throw new IllegalArgumentException(
-                    "No commit with that name found ;(");
+            System.out.print("No commit with that id exists.");
+            System.exit(0);
         }
         return Utils.readObject(commitFile, Commit.class);
     }

@@ -1,0 +1,18 @@
+> init
+<<<
++ wug.txt wug.txt
+> add wug.txt
+<<<
+> commit "commit wug.txt"
+<<<
++ wug.txt notwug.txt
+> add wug.txt
+<<<
+E .gitlet/stage_add/wug.txt
++ wug.txt wug.txt
+> add wug.txt
+<<<
+* .gitlet/stage_add/wug.txt
+> commit "not commit anything"
+No changes added to the commit.
+<<<

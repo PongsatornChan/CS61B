@@ -1,0 +1,14 @@
+> init
+<<<
++ wug.txt wug.txt
+> add wug.txt
+<<<
+> commit "track wug.txt"
+<<<
+> checkout master
+No need to checkout the current branch.
+<<<
++ troll.txt notwug.txt
+> checkout master
+No need to checkout the current branch.
+<<<
