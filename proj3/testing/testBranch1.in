@@ -1,0 +1,25 @@
+# test functionality of branch and a bit of checkout
+# test branch, checkout, commit
+# example in the branch spec
+> init
+<<<
+> branch test
+<<<
+E .gitlet/refs/branches/test
++ wug.txt wug.txt
+> add wug.txt
+<<<
+> commit "add wug.txt master"
+<<<
+> checkout test
+<<<
+* wug.txt
++ wug1.txt notwug.txt
+> add wug1.txt
+<<<
+> commit "add wug1.txt test"
+<<<
+> checkout master
+<<<
+* wug1.txt
+E wug.txt

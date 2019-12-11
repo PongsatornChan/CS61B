@@ -1,0 +1,18 @@
+# test functionality of find
+D COMMITID "[a-f0-9]{40}"
+> init
+<<<
+> find initial
+928d8d08fdd57908e58026c6705694dcc6c5185a
+<<<
+> find "initial commit"
+928d8d08fdd57908e58026c6705694dcc6c5185a
+<<<
++ wug.txt wug.txt
+> add wug.txt
+<<<
+> commit "added wug.txt"
+<<<
+> find wug.txt
+${COMMITID}
+<<<*
